@@ -1,5 +1,6 @@
 package com.emilocker.app.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
@@ -11,6 +12,7 @@ import androidx.work.WorkManager
 import com.emilocker.app.DeviceRestrictionManager
 import com.emilocker.app.R
 import com.emilocker.app.workers.OfflineExpiryWorker
+import com.emilocker.app.services.LockCheckService
 import java.util.concurrent.TimeUnit
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanIntentResult
@@ -50,6 +52,14 @@ class MainActivity : AppCompatActivity() {
             tvStatus.setTextColor(android.graphics.Color.RED)
         }
 
+        // Start the background lock monitoring service
+        val serviceIntent = Intent(this, LockCheckService::class.java)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            startForegroundService(serviceIntent)
+        } else {
+            startService(serviceIntent)
+        }
+
         btnLock.setOnClickListener {
             if (restrictionManager.isDeviceOwner()) {
                 restrictionManager.enforceEmiLock()
@@ -66,6 +76,34 @@ class MainActivity : AppCompatActivity() {
             options.setBeepEnabled(false)
             options.setBarcodeImageEnabled(true)
             barcodeLauncher.launch(options)
+        }
+
+        val btnSimulatorTest = findViewById<Button>(R.id.btnSimulatorTest)
+        btnSimulatorTest.setOnClickListener {
+            val masterKey = MasterKey.Builder(applicationContext, MasterKey.DEFAULT_MASTER_KEY_ALIAS)
+                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                .build()
+
+            val sharedPrefs = EncryptedSharedPreferences.create(
+                applicationContext,
+                "emi_secure_prefs",
+                masterKey,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            )
+
+            sharedPrefs.edit()
+                .putString("appId", "EMI_PRO") // Using dummy initial data from Program.cs
+                .putString("imei", "123456789012345") // Dummy EMI_PRO device
+                .putString("serverUrl", "https://emiapp-1.onrender.com/api")
+                .apply()
+
+            Toast.makeText(this, "Simulated QR Scan Completed! (Render API)", Toast.LENGTH_LONG).show()
+            
+            // Hide app from launcher and enforce lock
+            restrictionManager.hideAppFromLauncher()
+            restrictionManager.enforceEmiLock()
+            scheduleOfflineWorker()
         }
         
         // Start offline background worker
@@ -95,7 +133,11 @@ class MainActivity : AppCompatActivity() {
                     .apply()
 
                 Toast.makeText(this, "Device Registered via QR! Server: ${qrData.serverUrl}", Toast.LENGTH_LONG).show()
-                scheduleOfflineWorker() 
+                
+                // Hide app from launcher and enforce lock
+                restrictionManager.hideAppFromLauncher()
+                restrictionManager.enforceEmiLock()
+                scheduleOfflineWorker()
             }
         } catch (e: Exception) {
             Toast.makeText(this, "Invalid QR Format", Toast.LENGTH_SHORT).show()

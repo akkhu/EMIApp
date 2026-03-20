@@ -6,7 +6,7 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface EmiApiService {
-    @GET("api/mobile/{appId}/{imei}/status")
+    @GET("mobile/{appId}/{imei}/status")
     suspend fun getDeviceStatus(
         @Path("appId") appId: String,
         @Path("imei") imei: String
