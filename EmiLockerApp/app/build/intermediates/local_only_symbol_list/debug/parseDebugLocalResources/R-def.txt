@@ -1,9 +1,13 @@
 R_DEF: Internal format may change without notice
 local
 id btnCheckStatus
+id btnEmergencyUnlock
 id btnManualLock
 id btnScanQr
+id btnSimulatorTest
+id etUnlockCode
 id tvDeviceOwnerStatus
+id tvLockedMessage
 layout activity_locked
 layout activity_main
 string app_name

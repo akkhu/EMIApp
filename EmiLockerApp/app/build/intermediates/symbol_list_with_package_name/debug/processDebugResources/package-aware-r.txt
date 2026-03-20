@@ -3197,8 +3197,10 @@ id bounceBoth
 id bounceEnd
 id bounceStart
 id btnCheckStatus
+id btnEmergencyUnlock
 id btnManualLock
 id btnScanQr
+id btnSimulatorTest
 id buttonPanel
 id cache_measures
 id callMeasure
@@ -3280,6 +3282,7 @@ id end
 id endToStart
 id enterAlways
 id enterAlwaysCollapsed
+id etUnlockCode
 id exitUntilCollapsed
 id expand_activities_button
 id expanded_menu
@@ -3575,6 +3578,7 @@ id transition_scene_layoutid_cache
 id transition_transform
 id triangle
 id tvDeviceOwnerStatus
+id tvLockedMessage
 id unchecked
 id uniform
 id unlabeled

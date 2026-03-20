@@ -5,7 +5,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewbinding.ViewBinding;
@@ -22,9 +24,23 @@ public final class ActivityLockedBinding implements ViewBinding {
   @NonNull
   public final Button btnCheckStatus;
 
-  private ActivityLockedBinding(@NonNull LinearLayout rootView, @NonNull Button btnCheckStatus) {
+  @NonNull
+  public final Button btnEmergencyUnlock;
+
+  @NonNull
+  public final EditText etUnlockCode;
+
+  @NonNull
+  public final TextView tvLockedMessage;
+
+  private ActivityLockedBinding(@NonNull LinearLayout rootView, @NonNull Button btnCheckStatus,
+      @NonNull Button btnEmergencyUnlock, @NonNull EditText etUnlockCode,
+      @NonNull TextView tvLockedMessage) {
     this.rootView = rootView;
     this.btnCheckStatus = btnCheckStatus;
+    this.btnEmergencyUnlock = btnEmergencyUnlock;
+    this.etUnlockCode = etUnlockCode;
+    this.tvLockedMessage = tvLockedMessage;
   }
 
   @Override
@@ -60,7 +76,26 @@ public final class ActivityLockedBinding implements ViewBinding {
         break missingId;
       }
 
-      return new ActivityLockedBinding((LinearLayout) rootView, btnCheckStatus);
+      id = R.id.btnEmergencyUnlock;
+      Button btnEmergencyUnlock = ViewBindings.findChildViewById(rootView, id);
+      if (btnEmergencyUnlock == null) {
+        break missingId;
+      }
+
+      id = R.id.etUnlockCode;
+      EditText etUnlockCode = ViewBindings.findChildViewById(rootView, id);
+      if (etUnlockCode == null) {
+        break missingId;
+      }
+
+      id = R.id.tvLockedMessage;
+      TextView tvLockedMessage = ViewBindings.findChildViewById(rootView, id);
+      if (tvLockedMessage == null) {
+        break missingId;
+      }
+
+      return new ActivityLockedBinding((LinearLayout) rootView, btnCheckStatus, btnEmergencyUnlock,
+          etUnlockCode, tvLockedMessage);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

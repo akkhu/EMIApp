@@ -1,11 +1,15 @@
 [
     {
-        "merged": "com.emilocker.app-debug-40:/xml_device_admin_policies.xml.flat",
-        "source": "com.emilocker.app-main-42:/xml/device_admin_policies.xml"
+        "merged": "/Users/akhilesh/.gradle/daemon/8.13/com.emilocker.app-debug-40:/layout_activity_main.xml.flat",
+        "source": "/Users/akhilesh/.gradle/daemon/8.13/com.emilocker.app-main-42:/layout/activity_main.xml"
     },
     {
-        "merged": "com.emilocker.app-debug-40:/layout_activity_main.xml.flat",
-        "source": "com.emilocker.app-main-42:/layout/activity_main.xml"
+        "merged": "/Users/akhilesh/.gradle/daemon/8.13/com.emilocker.app-debug-40:/xml_device_admin_policies.xml.flat",
+        "source": "/Users/akhilesh/.gradle/daemon/8.13/com.emilocker.app-main-42:/xml/device_admin_policies.xml"
+    },
+    {
+        "merged": "/Users/akhilesh/.gradle/daemon/8.13/com.emilocker.app-debug-40:/layout_activity_locked.xml.flat",
+        "source": "/Users/akhilesh/.gradle/daemon/8.13/com.emilocker.app-main-42:/layout/activity_locked.xml"
     },
     {
         "merged": "com.emilocker.app-debug-40:/layout_activity_locked.xml.flat",
