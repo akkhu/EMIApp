@@ -4,7 +4,6 @@ package com.emilocker.app.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -21,19 +20,11 @@ public final class ActivityMainBinding implements ViewBinding {
   private final LinearLayout rootView;
 
   @NonNull
-  public final Button btnManualLock;
-
-  @NonNull
-  public final Button btnScanQr;
-
-  @NonNull
   public final TextView tvDeviceOwnerStatus;
 
-  private ActivityMainBinding(@NonNull LinearLayout rootView, @NonNull Button btnManualLock,
-      @NonNull Button btnScanQr, @NonNull TextView tvDeviceOwnerStatus) {
+  private ActivityMainBinding(@NonNull LinearLayout rootView,
+      @NonNull TextView tvDeviceOwnerStatus) {
     this.rootView = rootView;
-    this.btnManualLock = btnManualLock;
-    this.btnScanQr = btnScanQr;
     this.tvDeviceOwnerStatus = tvDeviceOwnerStatus;
   }
 
@@ -64,26 +55,13 @@ public final class ActivityMainBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
-      id = R.id.btnManualLock;
-      Button btnManualLock = ViewBindings.findChildViewById(rootView, id);
-      if (btnManualLock == null) {
-        break missingId;
-      }
-
-      id = R.id.btnScanQr;
-      Button btnScanQr = ViewBindings.findChildViewById(rootView, id);
-      if (btnScanQr == null) {
-        break missingId;
-      }
-
       id = R.id.tvDeviceOwnerStatus;
       TextView tvDeviceOwnerStatus = ViewBindings.findChildViewById(rootView, id);
       if (tvDeviceOwnerStatus == null) {
         break missingId;
       }
 
-      return new ActivityMainBinding((LinearLayout) rootView, btnManualLock, btnScanQr,
-          tvDeviceOwnerStatus);
+      return new ActivityMainBinding((LinearLayout) rootView, tvDeviceOwnerStatus);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

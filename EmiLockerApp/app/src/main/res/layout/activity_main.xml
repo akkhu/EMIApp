@@ -4,12 +4,14 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="24dp"
+    android:background="#121212"
     android:gravity="center">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="EMI Locker Dashboard"
+        android:text="EMI Locker Application"
+        android:textColor="#FFFFFF"
         android:textSize="24sp"
         android:textStyle="bold"
         android:layout_marginBottom="24dp"/>
@@ -19,19 +21,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Checking status..."
+        android:textColor="#AAAAAA"
         android:textSize="16sp"
         android:layout_marginBottom="32dp"/>
 
-    <Button
-        android:id="@+id/btnScanQr"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Scan QR to Register"
-        android:layout_marginBottom="16dp"/>
-
-    <Button
-        android:id="@+id/btnManualLock"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Debug: Trigger Emi Lock" />
 </LinearLayout>

@@ -2,9 +2,7 @@ R_DEF: Internal format may change without notice
 local
 id btnCheckStatus
 id btnEmergencyUnlock
-id btnManualLock
 id btnSave
-id btnScanQr
 id etAadhaarNumber
 id etCustomerName
 id etDob

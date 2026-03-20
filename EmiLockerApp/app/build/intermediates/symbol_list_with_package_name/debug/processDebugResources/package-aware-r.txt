@@ -3198,9 +3198,7 @@ id bounceEnd
 id bounceStart
 id btnCheckStatus
 id btnEmergencyUnlock
-id btnManualLock
 id btnSave
-id btnScanQr
 id buttonPanel
 id cache_measures
 id callMeasure
