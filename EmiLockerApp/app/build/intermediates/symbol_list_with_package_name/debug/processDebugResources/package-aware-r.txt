@@ -3199,8 +3199,8 @@ id bounceStart
 id btnCheckStatus
 id btnEmergencyUnlock
 id btnManualLock
+id btnSave
 id btnScanQr
-id btnSimulatorTest
 id buttonPanel
 id cache_measures
 id callMeasure
@@ -3282,7 +3282,13 @@ id end
 id endToStart
 id enterAlways
 id enterAlwaysCollapsed
+id etAadhaarNumber
+id etCustomerName
+id etDob
+id etFatherName
+id etPanNumber
 id etUnlockCode
+id etVillage
 id exitUntilCollapsed
 id expand_activities_button
 id expanded_menu
@@ -3508,6 +3514,7 @@ id snackbar_text
 id snap
 id snapMargins
 id south
+id spClient
 id spacer
 id special_effects_controller_view_tag
 id spline
@@ -3731,6 +3738,7 @@ layout abc_select_dialog_material
 layout abc_tooltip
 layout activity_locked
 layout activity_main
+layout activity_registration
 layout custom_dialog
 layout design_bottom_navigation_item
 layout design_bottom_sheet_dialog

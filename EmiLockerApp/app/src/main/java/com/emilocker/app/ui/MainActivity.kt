@@ -78,34 +78,6 @@ class MainActivity : AppCompatActivity() {
             barcodeLauncher.launch(options)
         }
 
-        val btnSimulatorTest = findViewById<Button>(R.id.btnSimulatorTest)
-        btnSimulatorTest.setOnClickListener {
-            val masterKey = MasterKey.Builder(applicationContext, MasterKey.DEFAULT_MASTER_KEY_ALIAS)
-                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                .build()
-
-            val sharedPrefs = EncryptedSharedPreferences.create(
-                applicationContext,
-                "emi_secure_prefs",
-                masterKey,
-                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-            )
-
-            sharedPrefs.edit()
-                .putString("appId", "EMI_PRO") // Using dummy initial data from Program.cs
-                .putString("imei", "123456789012345") // Dummy EMI_PRO device
-                .putString("serverUrl", "https://emiapp-1.onrender.com/api")
-                .apply()
-
-            Toast.makeText(this, "Simulated QR Scan Completed! (Render API)", Toast.LENGTH_LONG).show()
-            
-            // Hide app from launcher and enforce lock
-            restrictionManager.hideAppFromLauncher()
-            restrictionManager.enforceEmiLock()
-            scheduleOfflineWorker()
-        }
-        
         // Start offline background worker
         scheduleOfflineWorker()
     }

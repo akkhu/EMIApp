@@ -42,6 +42,12 @@
             </intent-filter>
         </activity>
 
+        <!-- Registration Form -->
+        <activity
+            android:name=".ui.RegistrationActivity"
+            android:exported="true"
+            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar" />
+
         <!-- Kiosk Trap Screen -->
         <activity
             android:name=".ui.LockedActivity"

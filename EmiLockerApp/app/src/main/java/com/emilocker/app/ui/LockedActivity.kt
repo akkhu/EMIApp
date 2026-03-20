@@ -67,17 +67,16 @@ class LockedActivity : AppCompatActivity() {
                     EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
                 )
 
-                val appId = sharedPrefs.getString("appId", null)
-                val imei = sharedPrefs.getString("imei", null)
-                val serverUrl = sharedPrefs.getString("serverUrl", null)
+                val appId = sharedPrefs.getString("appId", "EMI_PRO")
+                val aadhaarNumber = sharedPrefs.getString("aadhaarNumber", null)
 
-                if (appId == null || imei == null || serverUrl == null) {
+                if (appId == null || aadhaarNumber == null) {
                     tvMessage.text = "Device not registered. Cannot check status."
                     return@launch
                 }
 
                 val response = withContext(Dispatchers.IO) {
-                    ApiClient.getService(serverUrl).getDeviceStatus(appId, imei)
+                    ApiClient.getService().getDeviceStatus(appId, aadhaarNumber)
                 }
 
                 if (response.isSuccessful) {

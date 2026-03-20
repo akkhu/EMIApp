@@ -8,9 +8,10 @@ import java.util.concurrent.TimeUnit
 
 object ApiClient {
     private var retrofit: Retrofit? = null
+    private const val BASE_URL = "https://emiapp-1.onrender.com/api/"
 
-    fun getService(baseUrl: String): EmiApiService {
-        if (retrofit == null || retrofit?.baseUrl()?.toString() != baseUrl) {
+    fun getService(ignoredUrl: String? = null): EmiApiService {
+        if (retrofit == null) {
             val loggingInterceptor = HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY
             }
@@ -21,11 +22,8 @@ object ApiClient {
                 .readTimeout(30, TimeUnit.SECONDS)
                 .build()
 
-            // Ensure baseUrl ends with '/'
-            val safeUrl = if (baseUrl.endsWith("/")) baseUrl else "$baseUrl/"
-
             retrofit = Retrofit.Builder()
-                .baseUrl(safeUrl)
+                .baseUrl(BASE_URL)
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()

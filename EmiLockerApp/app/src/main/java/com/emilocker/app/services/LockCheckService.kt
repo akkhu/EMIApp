@@ -53,11 +53,10 @@ class LockCheckService : Service() {
                 EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
             )
 
-            val appId = sharedPrefs.getString("appId", null) ?: return
-            val imei = sharedPrefs.getString("imei", null) ?: return
-            val serverUrl = sharedPrefs.getString("serverUrl", null) ?: return
+            val appId = sharedPrefs.getString("appId", "EMI_PRO") ?: return
+            val aadhaarNumber = sharedPrefs.getString("aadhaarNumber", null) ?: return
 
-            val response = ApiClient.getService(serverUrl).getDeviceStatus(appId, imei)
+            val response = ApiClient.getService().getDeviceStatus(appId, aadhaarNumber)
             val manager = DeviceRestrictionManager(applicationContext)
 
             if (response.isSuccessful) {

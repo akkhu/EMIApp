@@ -12,7 +12,7 @@
         "source": "/Users/akhilesh/.gradle/daemon/8.13/com.emilocker.app-main-42:/layout/activity_locked.xml"
     },
     {
-        "merged": "com.emilocker.app-debug-40:/layout_activity_locked.xml.flat",
-        "source": "com.emilocker.app-main-42:/layout/activity_locked.xml"
+        "merged": "com.emilocker.app-debug-40:/layout_activity_registration.xml.flat",
+        "source": "com.emilocker.app-main-42:/layout/activity_registration.xml"
     }
 ]
