@@ -113,7 +113,7 @@ export default function Dashboard() {
                   <th className="p-4 rounded-tl-lg">App ID</th>
                   <th className="p-4">Customer Details</th>
                   <th className="p-4">Location &amp; Client</th>
-                  <th className="p-4">IMEI</th>
+                  <th className="p-4">Aadhaar</th>
                   <th className="p-4">Status</th>
                   <th className="p-4 rounded-tr-lg">Actions</th>
                 </tr>
