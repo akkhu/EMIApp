@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "com.emilocker.app-mergeDebugResources-38:/layout/activity_locked.xml",
+        "source": "com.emilocker.app-main-41:/layout/activity_locked.xml"
+    },
+    {
+        "merged": "com.emilocker.app-mergeDebugResources-38:/layout/activity_main.xml",
+        "source": "com.emilocker.app-main-41:/layout/activity_main.xml"
+    }
+]

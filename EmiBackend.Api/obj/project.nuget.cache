@@ -1,0 +1,31 @@
+{
+  "version": 2,
+  "dgSpecHash": "kzqFVJ5T1k0=",
+  "success": true,
+  "projectFilePath": "/Users/akhilesh/Desktop/MobileAndWeb/EmiBackend.Api/EmiBackend.Api.csproj",
+  "expectedPackageFiles": [
+    "/Users/akhilesh/.nuget/packages/bcrypt.net-next/4.1.0/bcrypt.net-next.4.1.0.nupkg.sha512",
+    "/Users/akhilesh/.nuget/packages/dnsclient/1.6.1/dnsclient.1.6.1.nupkg.sha512",
+    "/Users/akhilesh/.nuget/packages/microsoft.aspnetcore.authentication.jwtbearer/10.0.5/microsoft.aspnetcore.authentication.jwtbearer.10.0.5.nupkg.sha512",
+    "/Users/akhilesh/.nuget/packages/microsoft.aspnetcore.openapi/10.0.0/microsoft.aspnetcore.openapi.10.0.0.nupkg.sha512",
+    "/Users/akhilesh/.nuget/packages/microsoft.extensions.apidescription.server/10.0.0/microsoft.extensions.apidescription.server.10.0.0.nupkg.sha512",
+    "/Users/akhilesh/.nuget/packages/microsoft.identitymodel.abstractions/8.0.1/microsoft.identitymodel.abstractions.8.0.1.nupkg.sha512",
+    "/Users/akhilesh/.nuget/packages/microsoft.identitymodel.jsonwebtokens/8.0.1/microsoft.identitymodel.jsonwebtokens.8.0.1.nupkg.sha512",
+    "/Users/akhilesh/.nuget/packages/microsoft.identitymodel.logging/8.0.1/microsoft.identitymodel.logging.8.0.1.nupkg.sha512",
+    "/Users/akhilesh/.nuget/packages/microsoft.identitymodel.protocols/8.0.1/microsoft.identitymodel.protocols.8.0.1.nupkg.sha512",
+    "/Users/akhilesh/.nuget/packages/microsoft.identitymodel.protocols.openidconnect/8.0.1/microsoft.identitymodel.protocols.openidconnect.8.0.1.nupkg.sha512",
+    "/Users/akhilesh/.nuget/packages/microsoft.identitymodel.tokens/8.0.1/microsoft.identitymodel.tokens.8.0.1.nupkg.sha512",
+    "/Users/akhilesh/.nuget/packages/microsoft.openapi/2.4.1/microsoft.openapi.2.4.1.nupkg.sha512",
+    "/Users/akhilesh/.nuget/packages/mongodb.bson/3.7.1/mongodb.bson.3.7.1.nupkg.sha512",
+    "/Users/akhilesh/.nuget/packages/mongodb.driver/3.7.1/mongodb.driver.3.7.1.nupkg.sha512",
+    "/Users/akhilesh/.nuget/packages/sharpcompress/0.30.1/sharpcompress.0.30.1.nupkg.sha512",
+    "/Users/akhilesh/.nuget/packages/snappier/1.0.0/snappier.1.0.0.nupkg.sha512",
+    "/Users/akhilesh/.nuget/packages/swashbuckle.aspnetcore/10.1.5/swashbuckle.aspnetcore.10.1.5.nupkg.sha512",
+    "/Users/akhilesh/.nuget/packages/swashbuckle.aspnetcore.swagger/10.1.5/swashbuckle.aspnetcore.swagger.10.1.5.nupkg.sha512",
+    "/Users/akhilesh/.nuget/packages/swashbuckle.aspnetcore.swaggergen/10.1.5/swashbuckle.aspnetcore.swaggergen.10.1.5.nupkg.sha512",
+    "/Users/akhilesh/.nuget/packages/swashbuckle.aspnetcore.swaggerui/10.1.5/swashbuckle.aspnetcore.swaggerui.10.1.5.nupkg.sha512",
+    "/Users/akhilesh/.nuget/packages/system.identitymodel.tokens.jwt/8.0.1/system.identitymodel.tokens.jwt.8.0.1.nupkg.sha512",
+    "/Users/akhilesh/.nuget/packages/zstdsharp.port/0.7.3/zstdsharp.port.0.7.3.nupkg.sha512"
+  ],
+  "logs": []
+}
