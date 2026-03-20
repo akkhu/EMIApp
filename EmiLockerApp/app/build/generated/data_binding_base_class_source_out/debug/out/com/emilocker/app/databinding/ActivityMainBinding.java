@@ -24,12 +24,16 @@ public final class ActivityMainBinding implements ViewBinding {
   public final Button btnManualLock;
 
   @NonNull
+  public final Button btnScanQr;
+
+  @NonNull
   public final TextView tvDeviceOwnerStatus;
 
   private ActivityMainBinding(@NonNull LinearLayout rootView, @NonNull Button btnManualLock,
-      @NonNull TextView tvDeviceOwnerStatus) {
+      @NonNull Button btnScanQr, @NonNull TextView tvDeviceOwnerStatus) {
     this.rootView = rootView;
     this.btnManualLock = btnManualLock;
+    this.btnScanQr = btnScanQr;
     this.tvDeviceOwnerStatus = tvDeviceOwnerStatus;
   }
 
@@ -66,13 +70,20 @@ public final class ActivityMainBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.btnScanQr;
+      Button btnScanQr = ViewBindings.findChildViewById(rootView, id);
+      if (btnScanQr == null) {
+        break missingId;
+      }
+
       id = R.id.tvDeviceOwnerStatus;
       TextView tvDeviceOwnerStatus = ViewBindings.findChildViewById(rootView, id);
       if (tvDeviceOwnerStatus == null) {
         break missingId;
       }
 
-      return new ActivityMainBinding((LinearLayout) rootView, btnManualLock, tvDeviceOwnerStatus);
+      return new ActivityMainBinding((LinearLayout) rootView, btnManualLock, btnScanQr,
+          tvDeviceOwnerStatus);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

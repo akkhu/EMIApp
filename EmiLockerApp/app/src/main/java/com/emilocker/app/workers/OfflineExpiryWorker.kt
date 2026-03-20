@@ -1,27 +1,28 @@
 package com.emilocker.app.workers
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
-import androidx.work.Worker
+import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.emilocker.app.DeviceRestrictionManager
-import java.util.Date
+import com.emilocker.app.api.ApiClient
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class OfflineExpiryWorker(appContext: Context, workerParams: WorkerParameters) :
-    Worker(appContext, workerParams) {
+    CoroutineWorker(appContext, workerParams) {
 
-    override fun doWork(): Result {
-        Log.d("OfflineExpiryWorker", "Checking EMI expiry offline...")
-        
+    override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
+        Log.d("OfflineExpiryWorker", "Checking EMI status online...")
+
         try {
             val masterKey = MasterKey.Builder(applicationContext, MasterKey.DEFAULT_MASTER_KEY_ALIAS)
                 .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
                 .build()
 
-            val sharedPrefs: SharedPreferences = EncryptedSharedPreferences.create(
+            val sharedPrefs = EncryptedSharedPreferences.create(
                 applicationContext,
                 "emi_secure_prefs",
                 masterKey,
@@ -29,23 +30,53 @@ class OfflineExpiryWorker(appContext: Context, workerParams: WorkerParameters) :
                 EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
             )
 
-            // For testing: Suppose the expiry is set to 1 hour ago
-            val defaultExpiry = System.currentTimeMillis() - 3600000 
-            val expiryTimestamp = sharedPrefs.getLong("emi_expiry_timestamp", defaultExpiry)
+            val appId = sharedPrefs.getString("appId", null)
+            val imei = sharedPrefs.getString("imei", null)
+            val serverUrl = sharedPrefs.getString("serverUrl", null)
 
-            if (System.currentTimeMillis() > expiryTimestamp) {
-                // Time has passed expiry, trigger lock
-                Log.w("OfflineExpiryWorker", "EMI Expired! Locking device.")
-                val manager = DeviceRestrictionManager(applicationContext)
-                manager.enforceEmiLock()
-            } else {
-                Log.i("OfflineExpiryWorker", "EMI is within schedule. Expiry: ${Date(expiryTimestamp)}")
+            val manager = DeviceRestrictionManager(applicationContext)
+
+            if (appId == null || imei == null || serverUrl == null) {
+                Log.w("OfflineExpiryWorker", "Device not registered via QR yet!")
+                return@withContext Result.success()
             }
+
+            // Make the API call
+            val apiService = ApiClient.getService(serverUrl)
+            val response = apiService.getDeviceStatus(appId, imei)
+
+            if (response.isSuccessful) {
+                val status = response.body()?.status
+                if (status == "Locked") {
+                    Log.w("OfflineExpiryWorker", "Server says locked. Enforcing lock!")
+                    manager.enforceEmiLock()
+                } else {
+                    Log.i("OfflineExpiryWorker", "Server says unlocked. Clearing lock.")
+                    manager.clearEmiLock()
+                }
+                
+                // Save last successful sync time
+                sharedPrefs.edit().putLong("last_sync_time", System.currentTimeMillis()).apply()
+            } else {
+                Log.e("OfflineExpiryWorker", "API call failed with code: ${response.code()}")
+                enforceOfflineFallback(sharedPrefs, manager)
+            }
+
         } catch (e: Exception) {
-            Log.e("OfflineExpiryWorker", "Error securely reading prefs", e)
-            return Result.retry()
+            Log.e("OfflineExpiryWorker", "Network or pref exception", e)
+            return@withContext Result.retry()
         }
 
-        return Result.success()
+        return@withContext Result.success()
+    }
+
+    private fun enforceOfflineFallback(sharedPrefs: android.content.SharedPreferences, manager: DeviceRestrictionManager) {
+        // Fallback: Lock if hasn't synced for 7 days
+        val lastSync = sharedPrefs.getLong("last_sync_time", System.currentTimeMillis())
+        val sevenDaysMs = 7L * 24L * 60L * 60L * 1000L
+        if (System.currentTimeMillis() - lastSync > sevenDaysMs) {
+            Log.w("OfflineExpiryWorker", "Offline too long! Enforcing lock.")
+            manager.enforceEmiLock()
+        }
     }
 }

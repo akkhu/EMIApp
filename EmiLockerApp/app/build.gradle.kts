@@ -40,4 +40,12 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.work:work-runtime-ktx:2.9.0")
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
+    
+    // Retrofit & Networking
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
+    
+    // QR Scanning
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 }

@@ -23,6 +23,13 @@
         android:layout_marginBottom="32dp"/>
 
     <Button
+        android:id="@+id/btnScanQr"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Scan QR to Register"
+        android:layout_marginBottom="16dp"/>
+
+    <Button
         android:id="@+id/btnManualLock"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

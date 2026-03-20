@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EmiBackend.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+55b54399c0e46d65b9179f580142cbc1d6947e08")]
 [assembly: System.Reflection.AssemblyProductAttribute("EmiBackend.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EmiBackend.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
