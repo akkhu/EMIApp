@@ -99,6 +99,29 @@ class MainActivity : AppCompatActivity() {
         if (prefs.getBoolean("isRegistered", false)) {
             val deviceId = prefs.getString("deviceId", null) ?: return
             
+            // Self-healing: if FCM token wasn't saved locally, fetch it and update backend
+            if (prefs.getString("fcmToken", null) == null) {
+                com.google.firebase.messaging.FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val fcmToken = task.result
+                        prefs.edit().putString("fcmToken", fcmToken).apply()
+                        
+                        // Resend to backend to ensure it has the token
+                        val map = mapOf(
+                            "deviceId" to deviceId, 
+                            "userName" to "akhilesh", // default fallback if needed
+                            "phoneNumber" to "000000000",
+                            "fcmToken" to fcmToken
+                        )
+                        val body = gson.toJson(map).toRequestBody("application/json; charset=utf-8".toMediaType())
+                        client.newCall(Request.Builder().url("$BASE_URL/register").post(body).build()).enqueue(object: Callback {
+                            override fun onFailure(call: Call, e: IOException) {}
+                            override fun onResponse(call: Call, response: Response) {}
+                        })
+                    }
+                }
+            }
+
             val request = Request.Builder()
                 .url("$BASE_URL/status?deviceId=$deviceId")
                 .get()
@@ -151,7 +174,10 @@ class MainActivity : AppCompatActivity() {
                 runOnUiThread {
                     if (response.isSuccessful) {
                         getSharedPreferences("emi_prefs", Context.MODE_PRIVATE)
-                            .edit().putBoolean("isRegistered", true).apply()
+                            .edit()
+                            .putBoolean("isRegistered", true)
+                            .putString("fcmToken", fcmToken)
+                            .apply()
                             
                         Toast.makeText(this@MainActivity, "Registration Successful! App will now hide.", Toast.LENGTH_LONG).show()
                         tvStatus.text = "Status: Active & Polling"
