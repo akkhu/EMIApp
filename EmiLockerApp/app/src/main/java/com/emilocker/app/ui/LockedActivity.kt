@@ -1,22 +1,21 @@
 package com.emilocker.app.ui
 
+import android.content.Context
 import android.os.Bundle
 import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKey
 import com.emilocker.app.DeviceRestrictionManager
 import com.emilocker.app.R
-import com.emilocker.app.api.ApiClient
-import kotlinx.coroutines.*
+import okhttp3.*
+import org.json.JSONObject
+import java.io.IOException
 
 class LockedActivity : AppCompatActivity() {
 
-    private val scope = CoroutineScope(Dispatchers.Main + Job())
-    private lateinit var tvMessage: TextView
+    // Replace with your Vercel URL after deployment
+    private val BASE_URL = "http://10.0.2.2:5173/api"
+    private val client = OkHttpClient()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,100 +24,67 @@ class LockedActivity : AppCompatActivity() {
         // Lock the task, meaning the user cannot use recent apps or home buttons to leave.
         startLockTask()
 
-        tvMessage = findViewById(R.id.tvLockedMessage)
-
-        findViewById<Button>(R.id.btnCheckStatus).setOnClickListener {
-            checkServerForUnlock()
+        val btnCheckStatus = findViewById<Button>(R.id.btnCheckStatus)
+        btnCheckStatus.setOnClickListener {
+            checkStatus(btnCheckStatus)
         }
-
-        // Emergency unlock code
-        val etCode = findViewById<EditText>(R.id.etUnlockCode)
-        findViewById<Button>(R.id.btnEmergencyUnlock).setOnClickListener {
-            val code = etCode.text.toString().trim()
-            if (code == "EMI") {
-                tvMessage.text = "Emergency unlock activated!"
-                val manager = DeviceRestrictionManager(applicationContext)
-                manager.clearEmiLock()
-                stopLockTask()
-                finish()
-            } else {
-                tvMessage.text = "Invalid unlock code."
-            }
-        }
-
-        // Also auto-check every 30 seconds
-        startAutoCheck()
     }
 
-    private fun checkServerForUnlock() {
-        tvMessage.text = "Checking payment status with server..."
+    private fun checkStatus(btn: Button) {
+        val prefs = getSharedPreferences("emi_prefs", Context.MODE_PRIVATE)
+        val deviceId = prefs.getString("deviceId", null)
+        
+        if (deviceId == null) {
+            Toast.makeText(this, "Device ID not found", Toast.LENGTH_SHORT).show()
+            return
+        }
 
-        scope.launch {
-            try {
-                val masterKey = MasterKey.Builder(applicationContext, MasterKey.DEFAULT_MASTER_KEY_ALIAS)
-                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                    .build()
+        btn.isEnabled = false
+        btn.text = "Checking..."
 
-                val sharedPrefs = EncryptedSharedPreferences.create(
-                    applicationContext,
-                    "emi_secure_prefs",
-                    masterKey,
-                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-                )
+        val request = Request.Builder()
+            .url("$BASE_URL/status?deviceId=$deviceId")
+            .get()
+            .build()
 
-                val appId = sharedPrefs.getString("appId", "EMI_PRO")
-                val aadhaarNumber = sharedPrefs.getString("aadhaarNumber", null)
-
-                if (appId == null || aadhaarNumber == null) {
-                    tvMessage.text = "Device not registered. Cannot check status."
-                    return@launch
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                runOnUiThread {
+                    Toast.makeText(this@LockedActivity, "Network error", Toast.LENGTH_SHORT).show()
+                    btn.isEnabled = true
+                    btn.text = "Check Payment Status"
                 }
+            }
 
-                val response = withContext(Dispatchers.IO) {
-                    ApiClient.getService().getDeviceStatus(appId, aadhaarNumber)
-                }
+            override fun onResponse(call: Call, response: Response) {
+                runOnUiThread {
+                    if (response.isSuccessful) {
+                        val bodyStr = response.body?.string() ?: ""
+                        val json = JSONObject(bodyStr)
+                        val isLocked = json.optBoolean("isLocked", true)
 
-                if (response.isSuccessful) {
-                    val status = response.body()?.status
-                    if (status == "Unlocked") {
-                        tvMessage.text = "Payment received! Unlocking device..."
-                        val manager = DeviceRestrictionManager(applicationContext)
-                        manager.clearEmiLock()
-                        
-                        // Stop Lock Task Mode so user can leave
-                        stopLockTask()
-                        
-                        // Close this activity
-                        finish()
+                        if (!isLocked) {
+                            Toast.makeText(this@LockedActivity, "Unlocked! Device Restored.", Toast.LENGTH_LONG).show()
+                            stopLockTask()
+                            DeviceRestrictionManager(this@LockedActivity).clearEmiLock()
+                            finish()
+                        } else {
+                            Toast.makeText(this@LockedActivity, "Status is still locked.", Toast.LENGTH_SHORT).show()
+                        }
                     } else {
-                        tvMessage.text = "Device is still locked. Please make your EMI payment."
+                        Toast.makeText(this@LockedActivity, "Server Error", Toast.LENGTH_SHORT).show()
                     }
-                } else {
-                    tvMessage.text = "Server error (${response.code()}). Tap to retry."
+                    btn.isEnabled = true
+                    btn.text = "Check Payment Status"
                 }
-            } catch (e: Exception) {
-                tvMessage.text = "Network error. Please check internet connection."
             }
-        }
+        })
     }
 
-    private fun startAutoCheck() {
-        scope.launch {
-            while (isActive) {
-                delay(30_000) // Check every 30 seconds
-                checkServerForUnlock()
-            }
-        }
-    }
-
+    // Modern replacement for onBackPressed() handling is via OnBackPressedDispatcher
+    // But overriding the method to do nothing is a simple lock mechanism
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         // Do nothing to prevent exiting the lock screen
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        scope.cancel()
     }
 }

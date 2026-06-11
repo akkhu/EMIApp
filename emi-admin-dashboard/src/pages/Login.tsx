@@ -16,26 +16,13 @@ export default function Login() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // In a real app we would get the port dynamically or from .env
-      const res = await axios.post(`${API_URL}/auth/login`, { username, password });
-      if (res.data.requiresOtp) {
-        console.log("MOCK OTP IS: ", res.data.mockOtp);
-        setStep(2);
-        setError('');
+      const res = await axios.post(`/api/login`, { username, password });
+      if (res.data.token) {
+        localStorage.setItem('token', res.data.token);
+        navigate('/');
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Login failed or Server Offline');
-    }
-  };
-
-  const handleVerify = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const res = await axios.post(`${API_URL}/auth/verify-otp`, { username, otpCode: otp });
-      localStorage.setItem('token', res.data.token);
-      navigate('/');
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Invalid OTP');
+      setError(err.response?.data?.message || 'Login failed');
     }
   };
 
@@ -58,63 +45,35 @@ export default function Login() {
           </div>
         )}
 
-        {step === 1 ? (
-          <form onSubmit={handleLogin} className="space-y-5">
-            <div className="relative">
-              <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-              <input
-                type="text"
-                placeholder="Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="w-full bg-black/20 border border-white/10 rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-500 transition-all font-medium"
-                required
-              />
-            </div>
-            
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-black/20 border border-white/10 rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-500 transition-all font-medium"
-                required
-              />
-            </div>
+        <form onSubmit={handleLogin} className="space-y-5">
+          <div className="relative">
+            <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+            <input
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="w-full bg-black/20 border border-white/10 rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-500 transition-all font-medium"
+              required
+            />
+          </div>
+          
+          <div className="relative">
+            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full bg-black/20 border border-white/10 rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-500 transition-all font-medium"
+              required
+            />
+          </div>
 
-            <button type="submit" className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-blue-500/25 transition-all transform hover:-translate-y-0.5 mt-4">
-              Send OTP
-            </button>
-          </form>
-        ) : (
-          <form onSubmit={handleVerify} className="space-y-5">
-            <div className="text-center mb-6">
-              <p className="text-sm text-blue-200">A 6-digit code has been printed in the C# terminal (Mock SMS).</p>
-            </div>
-            
-            <div className="relative">
-              <Key className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-              <input
-                type="text"
-                placeholder="Enter 6-digit OTP"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                className="w-full bg-black/20 border border-blue-500/50 rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-purple-500 text-white text-center tracking-widest text-lg font-mono transition-all"
-                required
-              />
-            </div>
-
-            <button type="submit" className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-green-500/25 transition-all transform hover:-translate-y-0.5 mt-4">
-              Verify & Enter
-            </button>
-            
-            <button type="button" onClick={() => setStep(1)} className="w-full text-gray-400 hover:text-white text-sm transition-colors mt-4">
-              Back to Login
-            </button>
-          </form>
-        )}
+          <button type="submit" className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-blue-500/25 transition-all transform hover:-translate-y-0.5 mt-4">
+            Login
+          </button>
+        </form>
       </div>
     </div>
   );

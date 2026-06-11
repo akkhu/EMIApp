@@ -3,13 +3,8 @@
     package="com.emilocker.app">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-feature android:name="android.hardware.camera" android:required="false" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:allowBackup="true"
@@ -42,12 +37,6 @@
             </intent-filter>
         </activity>
 
-        <!-- Registration Form -->
-        <activity
-            android:name=".ui.RegistrationActivity"
-            android:exported="true"
-            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar" />
-
         <!-- Kiosk Trap Screen -->
         <activity
             android:name=".ui.LockedActivity"
@@ -60,12 +49,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
-        <!-- Background Lock Check Service -->
-        <service
-            android:name=".services.LockCheckService"
-            android:foregroundServiceType="specialUse"
-            android:exported="false" />
 
     </application>
 </manifest>
