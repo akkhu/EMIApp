@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
     private val gson = Gson()
     
     // Replace with your Vercel URL after deployment
-    private val BASE_URL = "http://10.0.2.2:5173/api"
+    private val BASE_URL = "https://emi-app-7pq1.vercel.app/api"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
