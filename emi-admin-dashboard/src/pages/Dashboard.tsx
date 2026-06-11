@@ -26,7 +26,7 @@ export default function Dashboard() {
     try {
       const res = await axios.get(`${API_URL}/devices`);
       setDevices(res.data.devices || []);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to fetch devices', err);
     } finally {
       setLoading(false);

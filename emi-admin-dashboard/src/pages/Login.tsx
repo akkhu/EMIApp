@@ -17,7 +17,7 @@ export default function Login() {
         localStorage.setItem('token', res.data.token);
         navigate('/');
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(err.response?.data?.message || 'Login failed');
     }
   };

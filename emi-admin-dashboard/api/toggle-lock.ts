@@ -39,7 +39,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(404).json({ error: 'Device not found' });
     }
 
-    const result = await collection.updateOne(
+    await collection.updateOne(
       { deviceId },
       { $set: { isLocked } }
     );
