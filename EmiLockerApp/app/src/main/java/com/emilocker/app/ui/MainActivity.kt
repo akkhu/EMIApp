@@ -81,6 +81,36 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        val prefs = getSharedPreferences("emi_prefs", Context.MODE_PRIVATE)
+        if (prefs.getBoolean("isRegistered", false)) {
+            val deviceId = prefs.getString("deviceId", null) ?: return
+            
+            val request = Request.Builder()
+                .url("$BASE_URL/status?deviceId=$deviceId")
+                .get()
+                .build()
+
+            client.newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {}
+
+                override fun onResponse(call: Call, response: Response) {
+                    if (response.isSuccessful) {
+                        val body = response.body?.string() ?: return
+                        val map = gson.fromJson(body, Map::class.java)
+                        val isLocked = map["isLocked"] as? Boolean ?: false
+                        if (isLocked) {
+                            runOnUiThread {
+                                restrictionManager.enforceEmiLock()
+                            }
+                        }
+                    }
+                }
+            })
+        }
+    }
+
     private fun registerDevice(deviceId: String, name: String, phone: String, tvStatus: TextView, btnRegister: Button, etName: EditText, etPhone: EditText) {
         val map = mapOf("deviceId" to deviceId, "userName" to name, "phoneNumber" to phone)
         val json = gson.toJson(map)
