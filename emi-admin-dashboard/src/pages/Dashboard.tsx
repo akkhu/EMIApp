@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { LogOut, Smartphone, Lock, Unlock, ShieldAlert, QrCode, X, Plus } from 'lucide-react';
+import { LogOut, Smartphone, Lock, Unlock, ShieldAlert, QrCode, X } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 
 const API_URL = '/api'; // Using Vercel serverless functions

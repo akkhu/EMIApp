@@ -1,16 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { ShieldCheck, User, Lock, Key } from 'lucide-react';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://192.168.1.8:5031/api'; // Live server fallback to local
+import { ShieldCheck, User, Lock } from 'lucide-react';
 
 export default function Login() {
   const navigate = useNavigate();
-  const [step, setStep] = useState(1);
   const [username, setUsername] = useState('admin');
   const [password, setPassword] = useState('password123');
-  const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
 
   const handleLogin = async (e: React.FormEvent) => {
