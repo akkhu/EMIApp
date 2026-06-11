@@ -1,5 +1,21 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { getDb } from './lib/mongodb.js';
+import * as admin from 'firebase-admin';
+
+// Initialize Firebase Admin once
+if (!admin.apps.length) {
+  try {
+    const serviceAccountStr = process.env.FIREBASE_SERVICE_ACCOUNT;
+    if (serviceAccountStr) {
+      const serviceAccount = JSON.parse(serviceAccountStr);
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount)
+      });
+    }
+  } catch (error) {
+    console.error('Firebase admin init error:', error);
+  }
+}
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -16,13 +32,30 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const db = await getDb();
     const collection = db.collection('devices');
 
+    // Fetch device to get FCM token
+    const device = await collection.findOne({ deviceId });
+    if (!device) {
+      return res.status(404).json({ error: 'Device not found' });
+    }
+
     const result = await collection.updateOne(
       { deviceId },
       { $set: { isLocked } }
     );
 
-    if (result.matchedCount === 0) {
-      return res.status(404).json({ error: 'Device not found' });
+    // Send FCM push notification
+    if (device.fcmToken && admin.apps.length > 0) {
+      try {
+        await admin.messaging().send({
+          token: device.fcmToken,
+          data: {
+            action: isLocked ? 'LOCK' : 'UNLOCK'
+          }
+        });
+        console.log(`FCM sent successfully to ${deviceId}`);
+      } catch (fcmError) {
+        console.error('FCM send error:', fcmError);
+      }
     }
 
     return res.status(200).json({ success: true, isLocked });

@@ -12,6 +12,7 @@
   "dependencies": {
     "@vercel/node": "^5.8.15",
     "axios": "^1.13.6",
+    "firebase-admin": "^14.0.0",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.577.0",
     "mongodb": "^7.3.0",

