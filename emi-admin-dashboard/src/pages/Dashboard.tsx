@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { LogOut, Smartphone, Lock, Unlock, ShieldAlert, QrCode, X } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
+import checksumData from '../checksum.json';
 
 const API_URL = '/api'; // Using Vercel serverless functions
 
@@ -54,8 +55,13 @@ export default function Dashboard() {
   };
 
   const getOnboardingUrl = () => {
-    // URL to download the APK. Assuming it's hosted in the public folder.
-    return `${window.location.origin}/EmiLockerApp.apk`;
+    // Official Android Enterprise Provisioning Payload
+    const payload = {
+      "android.app.extra.PROVISIONING_DEVICE_ADMIN_COMPONENT_NAME": "com.emilocker.app/com.emilocker.app.receivers.EmiDeviceAdminReceiver",
+      "android.app.extra.PROVISIONING_DEVICE_ADMIN_PACKAGE_DOWNLOAD_LOCATION": `${window.location.origin}/EmiLockerApp.apk`,
+      "android.app.extra.PROVISIONING_DEVICE_ADMIN_PACKAGE_CHECKSUM": checksumData.checksum
+    };
+    return JSON.stringify(payload);
   };
 
   return (
