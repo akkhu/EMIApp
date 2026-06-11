@@ -27,6 +27,8 @@ class LockMessagingService : FirebaseMessagingService() {
             restrictionManager.enforceEmiLock()
         } else if (action == "UNLOCK") {
             restrictionManager.clearEmiLock()
+        } else if (action == "RELEASE") {
+            restrictionManager.releaseDevice()
         }
     }
 }

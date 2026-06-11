@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { LogOut, Smartphone, Lock, Unlock, ShieldAlert, QrCode, X } from 'lucide-react';
+import { LogOut, Smartphone, Lock, Unlock, ShieldAlert, QrCode, X, Trash2 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import checksumData from '../checksum.json';
 
@@ -51,6 +51,20 @@ export default function Dashboard() {
     } catch (err) {
       console.error(err);
       alert('Failed to update device status.');
+    }
+  };
+
+  const handleReleaseDevice = async (deviceId: string) => {
+    if (!window.confirm("Are you sure you want to release this device? This will permanently remove the EMI lock, unhide the app, and allow the customer to uninstall it. You will not be able to lock this device again unless you factory reset it!")) {
+      return;
+    }
+    
+    try {
+      await axios.post(`${API_URL}/release-device`, { deviceId });
+      fetchDevices(); // refresh the list
+    } catch (err) {
+      console.error(err);
+      alert('Failed to release device.');
     }
   };
 
@@ -140,16 +154,22 @@ export default function Dashboard() {
                           onClick={() => handleLockAction(dev.deviceId, false)}
                           className="flex items-center justify-center w-8 h-8 bg-green-600/20 hover:bg-green-600/30 text-green-400 rounded border border-green-500/20 transition-colors tooltip-trigger relative group">
                           <Unlock size={14} />
-                          <span className="absolute -top-8 bg-black/80 px-2 py-1 text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity">Unlock</span>
+                          <span className="absolute -top-8 bg-black/80 px-2 py-1 text-xs rounded z-10 opacity-0 group-hover:opacity-100 transition-opacity">Unlock</span>
                         </button>
                       ) : (
                         <button 
                           onClick={() => handleLockAction(dev.deviceId, true)}
                           className="flex items-center justify-center w-8 h-8 bg-red-600/20 hover:bg-red-600/30 text-red-400 rounded border border-red-500/20 transition-colors tooltip-trigger relative group">
                           <Lock size={14} />
-                          <span className="absolute -top-8 bg-black/80 px-2 py-1 text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity">Lock</span>
+                          <span className="absolute -top-8 bg-black/80 px-2 py-1 text-xs rounded z-10 opacity-0 group-hover:opacity-100 transition-opacity">Lock</span>
                         </button>
                       )}
+                      <button 
+                        onClick={() => handleReleaseDevice(dev.deviceId)}
+                        className="flex items-center justify-center w-8 h-8 bg-gray-600/20 hover:bg-gray-600/30 text-gray-400 rounded border border-gray-500/20 transition-colors tooltip-trigger relative group">
+                        <Trash2 size={14} />
+                        <span className="absolute -top-8 bg-black/80 px-2 py-1 text-xs rounded z-10 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Release Device</span>
+                      </button>
                     </td>
                   </tr>
                 ))}

@@ -47,4 +47,21 @@ class DeviceRestrictionManager(private val context: Context) {
             dpm.setLockTaskPackages(adminName, emptyArray())
         }
     }
+
+    fun releaseDevice() {
+        if (isDeviceOwner()) {
+            clearEmiLock()
+            
+            // Unhide the MainActivity so the user can easily uninstall it
+            val p = context.packageManager
+            val componentName = ComponentName(context, com.emilocker.app.ui.MainActivity::class.java)
+            p.setComponentEnabledSetting(componentName, android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_ENABLED, android.content.pm.PackageManager.DONT_KILL_APP)
+            
+            // Clear SharedPreferences
+            context.getSharedPreferences("emi_prefs", Context.MODE_PRIVATE).edit().clear().apply()
+
+            // Remove Device Owner permanently
+            dpm.clearDeviceOwnerApp(context.packageName)
+        }
+    }
 }
