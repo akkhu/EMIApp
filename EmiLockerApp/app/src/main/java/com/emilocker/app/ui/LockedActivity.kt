@@ -28,6 +28,32 @@ class LockedActivity : AppCompatActivity() {
         btnCheckStatus.setOnClickListener {
             checkStatus(btnCheckStatus)
         }
+
+        var clickCount = 0
+        var lastClickTime = 0L
+        val tvLockTitle = findViewById<android.widget.TextView>(R.id.tvLockTitle)
+        val btnEmergencyRelease = findViewById<Button>(R.id.btnEmergencyRelease)
+
+        tvLockTitle.setOnClickListener {
+            val currentTime = System.currentTimeMillis()
+            if (currentTime - lastClickTime > 1500) {
+                clickCount = 0 // reset if they pause for more than 1.5 seconds
+            }
+            lastClickTime = currentTime
+            clickCount++
+
+            if (clickCount >= 10) {
+                clickCount = 0
+                btnEmergencyRelease.visibility = android.view.View.VISIBLE
+                Toast.makeText(this, "Emergency Backdoor Unlocked", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        btnEmergencyRelease.setOnClickListener {
+            stopLockTask()
+            DeviceRestrictionManager(this).releaseDevice()
+            finish()
+        }
     }
 
     private fun checkStatus(btn: Button) {

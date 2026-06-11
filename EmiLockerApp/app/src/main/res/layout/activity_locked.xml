@@ -8,6 +8,7 @@
     android:background="#121212">
 
     <TextView
+        android:id="@+id/tvLockTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="DEVICE LOCKED"
@@ -32,5 +33,16 @@
         android:layout_height="wrap_content"
         android:text="Check Payment Status"
         android:padding="16dp"/>
+
+    <Button
+        android:id="@+id/btnEmergencyRelease"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Emergency Offline Release"
+        android:padding="16dp"
+        android:layout_marginTop="32dp"
+        android:backgroundTint="#FF0000"
+        android:textColor="#FFFFFF"
+        android:visibility="gone"/>
 
 </LinearLayout>
