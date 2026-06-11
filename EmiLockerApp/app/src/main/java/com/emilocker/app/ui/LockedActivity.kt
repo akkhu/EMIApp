@@ -97,6 +97,12 @@ class LockedActivity : AppCompatActivity() {
                         } else {
                             Toast.makeText(this@LockedActivity, "Status is still locked.", Toast.LENGTH_SHORT).show()
                         }
+                    } else if (response.code == 404) {
+                        // The device was deleted from the backend!
+                        Toast.makeText(this@LockedActivity, "Device record not found. Releasing lock...", Toast.LENGTH_LONG).show()
+                        stopLockTask()
+                        DeviceRestrictionManager(this@LockedActivity).releaseDevice()
+                        finish()
                     } else {
                         Toast.makeText(this@LockedActivity, "Server Error", Toast.LENGTH_SHORT).show()
                     }
