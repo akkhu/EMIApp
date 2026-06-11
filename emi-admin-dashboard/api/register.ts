@@ -7,7 +7,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const { deviceId, userName, phoneNumber } = req.body;
+    const { deviceId, userName, phoneNumber, fcmToken } = req.body;
 
     if (!deviceId) {
       return res.status(400).json({ error: 'deviceId is required' });
@@ -20,6 +20,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       deviceId,
       userName,
       phoneNumber,
+      fcmToken,
       isLocked: false,
       registeredAt: new Date(),
       lastSeen: new Date(),
