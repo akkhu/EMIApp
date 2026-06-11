@@ -11,4 +11,14 @@ class EmiDeviceAdminReceiver : DeviceAdminReceiver() {
         Log.i("EmiDeviceAdmin", "Device Owner Enabled")
         // Trigger initial policies
     }
+
+    override fun onProfileProvisioningComplete(context: Context, intent: Intent) {
+        super.onProfileProvisioningComplete(context, intent)
+        Log.i("EmiDeviceAdmin", "Provisioning Complete")
+        
+        // Automatically launch MainActivity for registration
+        val launchIntent = Intent(context, com.emilocker.app.ui.MainActivity::class.java)
+        launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(launchIntent)
+    }
 }
