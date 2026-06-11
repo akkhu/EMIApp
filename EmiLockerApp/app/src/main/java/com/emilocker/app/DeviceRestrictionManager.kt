@@ -60,6 +60,12 @@ class DeviceRestrictionManager(private val context: Context) {
             // Clear SharedPreferences
             context.getSharedPreferences("emi_prefs", Context.MODE_PRIVATE).edit().clear().apply()
 
+            // Open the App Settings page so they can click Uninstall immediately!
+            val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+            intent.data = android.net.Uri.parse("package:" + context.packageName)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(intent)
+
             // Remove Device Owner permanently
             dpm.clearDeviceOwnerApp(context.packageName)
         }
