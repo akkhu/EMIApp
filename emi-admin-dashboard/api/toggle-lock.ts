@@ -1,15 +1,16 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { getDb } from './lib/mongodb.js';
-import * as admin from 'firebase-admin';
+import { getApps, initializeApp, cert } from 'firebase-admin/app';
+import { getMessaging } from 'firebase-admin/messaging';
 
 // Initialize Firebase Admin once
-if (!admin.apps.length) {
+if (!getApps().length) {
   try {
     const serviceAccountStr = process.env.FIREBASE_SERVICE_ACCOUNT;
     if (serviceAccountStr) {
       const serviceAccount = JSON.parse(serviceAccountStr);
-      admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount)
+      initializeApp({
+        credential: cert(serviceAccount)
       });
     }
   } catch (error) {
@@ -44,9 +45,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     );
 
     // Send FCM push notification
-    if (device.fcmToken && admin.apps.length > 0) {
+    if (device.fcmToken && getApps().length > 0) {
       try {
-        await admin.messaging().send({
+        await getMessaging().send({
           token: device.fcmToken,
           data: {
             action: isLocked ? 'LOCK' : 'UNLOCK'
