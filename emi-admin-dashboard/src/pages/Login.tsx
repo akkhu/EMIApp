@@ -18,7 +18,11 @@ export default function Login() {
         navigate('/');
       }
     } catch (err: unknown) {
-      setError(err.response?.data?.message || 'Login failed');
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.message || 'Login failed');
+      } else {
+        setError('Login failed');
+      }
     }
   };
 
