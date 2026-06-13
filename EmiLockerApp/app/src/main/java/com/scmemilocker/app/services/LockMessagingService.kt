@@ -1,7 +1,7 @@
-package com.emilocker.app.services
+package com.scmemilocker.app.services
 
 import android.util.Log
-import com.emilocker.app.DeviceRestrictionManager
+import com.scmemilocker.app.DeviceRestrictionManager
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 

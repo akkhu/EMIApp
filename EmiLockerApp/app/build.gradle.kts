@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.emilocker.app"
+    namespace = "com.scmemilocker.app"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.emilocker.app"
+        applicationId = "com.scmemilocker.app"
         minSdk = 24
         targetSdk = 34
         versionCode = 1

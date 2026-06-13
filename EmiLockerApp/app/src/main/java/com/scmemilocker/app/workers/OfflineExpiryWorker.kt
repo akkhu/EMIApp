@@ -1,10 +1,10 @@
-package com.emilocker.app.workers
+package com.scmemilocker.app.workers
 
 import android.content.Context
 import android.util.Log
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import com.emilocker.app.DeviceRestrictionManager
+import com.scmemilocker.app.DeviceRestrictionManager
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject

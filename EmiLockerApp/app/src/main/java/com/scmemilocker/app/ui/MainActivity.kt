@@ -1,4 +1,4 @@
-package com.emilocker.app.ui
+package com.scmemilocker.app.ui
 
 import android.content.Context
 import android.os.Bundle
@@ -11,9 +11,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import com.emilocker.app.DeviceRestrictionManager
-import com.emilocker.app.R
-import com.emilocker.app.workers.OfflineExpiryWorker
+import com.scmemilocker.app.DeviceRestrictionManager
+import com.scmemilocker.app.R
+import com.scmemilocker.app.workers.OfflineExpiryWorker
 import com.google.gson.Gson
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType

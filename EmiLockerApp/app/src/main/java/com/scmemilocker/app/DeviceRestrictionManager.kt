@@ -1,12 +1,12 @@
-package com.emilocker.app
+package com.scmemilocker.app
 
 import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.UserManager
-import com.emilocker.app.receivers.EmiDeviceAdminReceiver
-import com.emilocker.app.ui.LockedActivity
+import com.scmemilocker.app.receivers.EmiDeviceAdminReceiver
+import com.scmemilocker.app.ui.LockedActivity
 
 class DeviceRestrictionManager(private val context: Context) {
     
@@ -54,7 +54,7 @@ class DeviceRestrictionManager(private val context: Context) {
             
             // Unhide the MainActivity so the user can easily uninstall it
             val p = context.packageManager
-            val componentName = ComponentName(context, com.emilocker.app.ui.MainActivity::class.java)
+            val componentName = ComponentName(context, com.scmemilocker.app.ui.MainActivity::class.java)
             p.setComponentEnabledSetting(componentName, android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_ENABLED, android.content.pm.PackageManager.DONT_KILL_APP)
             
             // Clear SharedPreferences

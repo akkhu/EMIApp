@@ -1,4 +1,4 @@
-package com.emilocker.app.receivers
+package com.scmemilocker.app.receivers
 
 import android.app.admin.DeviceAdminReceiver
 import android.content.Context
@@ -17,7 +17,7 @@ class EmiDeviceAdminReceiver : DeviceAdminReceiver() {
         Log.i("EmiDeviceAdmin", "Provisioning Complete")
         
         // Automatically launch MainActivity for registration
-        val launchIntent = Intent(context, com.emilocker.app.ui.MainActivity::class.java)
+        val launchIntent = Intent(context, com.scmemilocker.app.ui.MainActivity::class.java)
         launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(launchIntent)
     }

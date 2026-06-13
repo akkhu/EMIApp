@@ -1,12 +1,12 @@
-package com.emilocker.app.ui
+package com.scmemilocker.app.ui
 
 import android.content.Context
 import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.emilocker.app.DeviceRestrictionManager
-import com.emilocker.app.R
+import com.scmemilocker.app.DeviceRestrictionManager
+import com.scmemilocker.app.R
 import okhttp3.*
 import org.json.JSONObject
 import java.io.IOException
