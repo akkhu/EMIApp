@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "150866400517",
+    "project_id": "emiapp-a5dee",
+    "storage_bucket": "emiapp-a5dee.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:150866400517:android:860f419d23950495c7536c",
+        "android_client_info": {
+          "package_name": "com.emilocker.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANTosOH6SF0lWotiincEx11u7DC2d6EE0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:150866400517:android:1f6ade04a95dd61fc7536c",
+        "android_client_info": {
+          "package_name": "com.scmemilocker.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANTosOH6SF0lWotiincEx11u7DC2d6EE0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
