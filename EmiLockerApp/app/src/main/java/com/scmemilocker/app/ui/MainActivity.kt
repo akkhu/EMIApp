@@ -40,6 +40,9 @@ class MainActivity : AppCompatActivity() {
         val etName = findViewById<EditText>(R.id.etName)
         val etPhone = findViewById<EditText>(R.id.etPhone)
         val btnRegister = findViewById<Button>(R.id.btnRegister)
+        val tvAppVersion = findViewById<TextView>(R.id.tvAppVersion)
+        
+        tvAppVersion.text = "Version: ${com.scmemilocker.app.BuildConfig.VERSION_NAME} (${com.scmemilocker.app.BuildConfig.VERSION_CODE})"
 
         if (!restrictionManager.isDeviceOwner()) {
             tvStatus.text = "Status: Device Admin NOT Provisioned"

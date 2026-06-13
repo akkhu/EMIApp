@@ -4,6 +4,7 @@ import axios from 'axios';
 import { LogOut, Smartphone, Lock, Unlock, ShieldAlert, QrCode, X, Trash2 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import checksumData from '../checksum.json';
+import versionData from '../version.json';
 
 const API_URL = '/api'; // Using Vercel serverless functions
 
@@ -91,6 +92,9 @@ export default function Dashboard() {
             <div>
               <h1 className="text-2xl font-bold tracking-wider">EMI ADMIN PORTAL</h1>
               <p className="text-gray-400 text-sm">Manage Device Financing & Security</p>
+            </div>
+            <div className="ml-4 px-3 py-1 bg-white/5 rounded-full border border-white/10 hidden sm:block">
+              <span className="text-xs text-gray-400">APK v{versionData.versionName}</span>
             </div>
           </div>
           <div className="flex items-center space-x-4">
