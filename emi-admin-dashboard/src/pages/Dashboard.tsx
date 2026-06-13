@@ -71,7 +71,7 @@ export default function Dashboard() {
   const getOnboardingUrl = () => {
     // Official Android Enterprise Provisioning Payload
     const payload = {
-      "android.app.extra.PROVISIONING_DEVICE_ADMIN_COMPONENT_NAME": "com.emilocker.app/com.emilocker.app.receivers.EmiDeviceAdminReceiver",
+      "android.app.extra.PROVISIONING_DEVICE_ADMIN_COMPONENT_NAME": "com.scmemilocker.app/com.scmemilocker.app.receivers.EmiDeviceAdminReceiver",
       "android.app.extra.PROVISIONING_DEVICE_ADMIN_PACKAGE_DOWNLOAD_LOCATION": `${window.location.origin}/EmiLockerApp.apk`,
       "android.app.extra.PROVISIONING_DEVICE_ADMIN_PACKAGE_CHECKSUM": checksumData.checksum
     };
