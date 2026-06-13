@@ -7,8 +7,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const { username, password } = req.body;
 
-  // Hardcoded MVP Admin Credentials
-  if (username === 'admin' && password === 'password123') {
+  const validUsername = process.env.ADMIN_USERNAME;
+  const validPassword = process.env.ADMIN_PASSWORD;
+
+  if (!validUsername || !validPassword) {
+    return res.status(500).json({ error: 'Server configuration error: Credentials not set' });
+  }
+
+  if (username === validUsername && password === validPassword) {
     // Return a dummy token
     return res.status(200).json({ 
       success: true, 
