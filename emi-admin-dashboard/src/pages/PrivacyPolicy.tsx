@@ -1,5 +1,3 @@
-import React from 'react';
-
 const PrivacyPolicy = () => {
   return (
     <div className="min-h-screen bg-gray-900 text-gray-200 p-8">

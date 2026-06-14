@@ -11,7 +11,7 @@
         android:id="@+id/tvLockTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="DEVICE LOCKED"
+        android:text="DEVICE SECURED"
         android:textColor="#FF5252"
         android:textSize="32sp"
         android:textStyle="bold"
@@ -20,7 +20,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="This device has been locked due to a missed EMI payment. Please connect to the internet and make a payment to unlock."
+        android:text="This device has been secured by your IT Administrator due to a policy compliance issue. Please connect to the internet to sync policy status."
         android:textColor="#FFFFFF"
         android:textSize="18sp"
         android:textAlignment="center"
@@ -31,7 +31,7 @@
         android:id="@+id/btnCheckStatus"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Check Payment Status"
+        android:text="Sync Device Policy"
         android:padding="16dp"/>
 
     <Button
