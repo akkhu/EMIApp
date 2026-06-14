@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy – Workspace Device Admin</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f172a;
+            color: #cbd5e1;
+            padding: 40px 20px;
+            line-height: 1.7;
+        }
+        .container {
+            max-width: 860px;
+            margin: 0 auto;
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 48px;
+            border: 1px solid #334155;
+        }
+        h1 {
+            font-size: 2rem;
+            color: #f1f5f9;
+            border-bottom: 2px solid #334155;
+            padding-bottom: 16px;
+            margin-bottom: 8px;
+        }
+        .date {
+            color: #64748b;
+            font-size: 0.875rem;
+            margin-bottom: 36px;
+        }
+        h2 {
+            font-size: 1.2rem;
+            color: #60a5fa;
+            margin: 28px 0 10px;
+        }
+        p { margin-bottom: 12px; color: #94a3b8; }
+        ul {
+            padding-left: 24px;
+            margin: 8px 0 16px;
+            color: #94a3b8;
+        }
+        ul li { margin-bottom: 6px; }
+        strong { color: #e2e8f0; }
+        .footer {
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid #334155;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Privacy Policy – Workspace Device Admin</h1>
+        <p class="date">Last Updated: June 14, 2026</p>
+
+        <h2>1. Introduction</h2>
+        <p>
+            Workspace Device Admin ("we," "our," or "us") provides a device management and security solution for enterprise and authorized device financing administrators. This Privacy Policy explains how we collect, use, and protect information when you use the Workspace Device Admin application ("App").
+        </p>
+
+        <h2>2. Device Administrator Privileges</h2>
+        <p><strong>This app uses Device Administrator permissions (BIND_DEVICE_ADMIN).</strong></p>
+        <p>
+            Workspace Device Admin is designed exclusively for enterprise and financial management of hardware assets. To function correctly, the App requires Device Administrator privileges. These privileges are strictly used to:
+        </p>
+        <ul>
+            <li>Restrict unauthorized factory resets that would circumvent security policies.</li>
+            <li>Enforce device locking (Kiosk mode) in the event of administrative action by an authorized IT administrator.</li>
+            <li>Prevent booting into Safe Mode to bypass security restrictions.</li>
+        </ul>
+        <p>
+            These permissions are never used to access your personal data, intercept communications, or monitor private usage of the device.
+        </p>
+
+        <h2>3. Information We Collect</h2>
+        <p>We collect only the minimum data required to uniquely identify and manage the provisioned device:</p>
+        <ul>
+            <li><strong>Device Identifiers:</strong> A unique device ID (Android ID) to register the device in our secure administration portal.</li>
+            <li><strong>Basic Registration Info:</strong> Name and Phone Number, provided strictly for hardware administration and contact purposes.</li>
+            <li><strong>Push Notification Tokens:</strong> Firebase Cloud Messaging (FCM) tokens solely to send secure lock/unlock administrative commands to the device.</li>
+        </ul>
+
+        <h2>4. Information We Do NOT Collect</h2>
+        <p>To ensure your personal privacy, Workspace Device Admin <strong>does not</strong> collect, track, or access:</p>
+        <ul>
+            <li>Your physical location (GPS data).</li>
+            <li>Your browsing history or internet traffic.</li>
+            <li>Your personal files, photos, or videos.</li>
+            <li>Your text messages, emails, or phone call logs.</li>
+            <li>Your keystrokes or passwords.</li>
+        </ul>
+
+        <h2>5. How We Use the Information</h2>
+        <p>The collected information is used strictly to:</p>
+        <ul>
+            <li>Register the device within the enterprise management portal.</li>
+            <li>Allow authorized administrators to secure or lock the device remotely in line with organizational policy.</li>
+            <li>Ensure the integrity and security of the device management system.</li>
+        </ul>
+
+        <h2>6. Data Security and Retention</h2>
+        <p>
+            All data transmitted between the App and our servers is encrypted using industry-standard secure protocols (HTTPS/TLS). We retain device identifiers only as long as the device remains under active management. When a device is officially released by the administrator, all Device Owner privileges are permanently stripped, the App can be uninstalled, and the registration data is securely purged from active management systems.
+        </p>
+
+        <h2>7. User Consent and Device Release</h2>
+        <p>
+            By enrolling a device using the Android Enterprise provisioning method (QR Code or ADB), the administrator acknowledges and consents to these terms on behalf of the organization. Because Workspace Device Admin is a Device Owner application, it cannot be uninstalled manually by the end-user. It can only be fully removed when the authorized administrator initiates a "Release Device" action from the management portal, which safely and permanently removes all restrictions and allows normal uninstallation.
+        </p>
+
+        <h2>8. Changes to This Policy</h2>
+        <p>
+            We may update this Privacy Policy from time to time. We will notify device administrators of any significant changes by updating the "Last Updated" date at the top of this page.
+        </p>
+
+        <div class="footer">
+            <p>If you have any questions regarding this Privacy Policy or your device's management status, please contact your organizational IT administrator or hardware provider.</p>
+        </div>
+    </div>
+</body>
+</html>
