@@ -34,11 +34,13 @@ zip -j ~/Desktop/PlayStoreAssets.zip EmiLockerApp/app/build/outputs/bundle/relea
 echo "📦 Copying APK to Vercel Dashboard..."
 cp EmiLockerApp/app/build/outputs/apk/release/app-release.apk emi-admin-dashboard/public/EmiLockerApp.apk
 
-# 5. Calculate New Checksum
-echo "🔐 Calculating new APK checksum..."
-HASH=$(shasum -a 256 emi-admin-dashboard/public/EmiLockerApp.apk | awk '{print $1}')
-URL_SAFE_B64=$(echo -n $HASH | xxd -r -p | base64 | tr '+/' '-_' | tr -d '=')
-echo "{\"checksum\": \"$URL_SAFE_B64\"}" > emi-admin-dashboard/src/checksum.json
+# 5. Calculate Signing Certificate Checksum
+# NOTE: Since we use Google Play App Signing, the checksum in the QR code
+# must be the SHA-256 of the signing CERTIFICATE, not the raw APK file.
+# The signing cert checksum only changes if Google rotates their signing key.
+# Current Google Play signing cert checksum:
+echo "🔐 Signing certificate checksum (does not change between builds):"
+cat emi-admin-dashboard/src/checksum.json
 
 # 6. Update Dashboard Version JSON
 echo "{\"versionName\": \"$NEW_VERSION_NAME\", \"versionCode\": $NEW_VERSION_CODE}" > emi-admin-dashboard/src/version.json
@@ -49,5 +51,12 @@ git add .
 git commit -m "Bump version to $NEW_VERSION_NAME (Code: $NEW_VERSION_CODE)"
 
 echo ""
-echo "🎉 Done! Everything is built, copied, and committed!"
-echo "👉 Now just push your changes in GitHub Desktop to trigger the Vercel update."
+echo "🎉 Done! AAB and local APK built successfully."
+echo ""
+echo "⚠️  IMPORTANT: Since we use Google Play App Signing, you must:"
+echo "   1. Upload the new AAB from ~/Desktop/PlayStoreAssets.zip to Play Console"
+echo "   2. Go to Play Console > App Bundle Explorer > Download the Google-signed APK"
+echo "   3. Rename it to EmiLockerApp.apk and replace emi-admin-dashboard/public/EmiLockerApp.apk"
+echo "   4. Commit and push again to update Vercel"
+echo ""
+echo "👉 Push your changes in GitHub Desktop to trigger the Vercel update."
