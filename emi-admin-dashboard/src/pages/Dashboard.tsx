@@ -71,16 +71,14 @@ export default function Dashboard() {
 
   const getOnboardingUrl = () => {
     // Android Device Owner Provisioning QR Code Payload
-    // packageChecksum = SHA-256 of the APK file (changes every build)
-    // signatureChecksum = SHA-256 of signing certificate (stays constant)
     const payload = {
       "android.app.extra.PROVISIONING_DEVICE_ADMIN_COMPONENT_NAME": "com.scmemilocker.app/com.scmemilocker.app.receivers.EmiDeviceAdminReceiver",
       "android.app.extra.PROVISIONING_DEVICE_ADMIN_PACKAGE_DOWNLOAD_LOCATION": `${window.location.origin}/EmiLockerApp.apk`,
       "android.app.extra.PROVISIONING_DEVICE_ADMIN_PACKAGE_CHECKSUM": checksumData.packageChecksum,
-      "android.app.extra.PROVISIONING_DEVICE_ADMIN_SIGNATURE_CHECKSUM": checksumData.signatureChecksum,
       "android.app.extra.PROVISIONING_SKIP_ENCRYPTION": true,
       "android.app.extra.PROVISIONING_LEAVE_ALL_SYSTEM_APPS_ENABLED": true,
-      "android.app.extra.PROVISIONING_SKIP_EDUCATION_SCREENS": true
+      "android.app.extra.PROVISIONING_SKIP_EDUCATION_SCREENS": true,
+      "android.app.extra.PROVISIONING_USE_MOBILE_DATA": true
     };
     return JSON.stringify(payload);
   };
