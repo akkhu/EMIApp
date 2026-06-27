@@ -8,8 +8,8 @@ const apkFileName = versionData.apkFileName;
 const apkPath = apkFileName ? path.join(publicDir, apkFileName) : null;
 
 // Local release.keystore signature checksum
-// (Proven to work on OnePlus Android 16)
-const SIGNATURE_CHECKSUM = 'yftj35vOI3quzK3uzZFcII0SfE8Jx0vwLOPfCDKGZcc';
+// (Correct checksum for emilocker-release-key.jks)
+const SIGNATURE_CHECKSUM = 'gRYpPvtWmcBzpDb2nf-tW0d5XJvxIcC3Xplgnk_dbqM';
 
 try {
   if (apkPath && fs.existsSync(apkPath)) {
