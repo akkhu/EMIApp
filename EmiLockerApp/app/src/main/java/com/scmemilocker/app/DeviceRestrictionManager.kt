@@ -19,6 +19,10 @@ class DeviceRestrictionManager(private val context: Context) {
 
     fun enforceEmiLock() {
         if (isDeviceOwner()) {
+            // Save state
+            context.getSharedPreferences("emi_prefs", Context.MODE_PRIVATE)
+                .edit().putBoolean("isLocked", true).apply()
+
             // 1. Prevent the user from performing a Factory Reset
             dpm.addUserRestriction(adminName, UserManager.DISALLOW_FACTORY_RESET)
             
@@ -41,6 +45,10 @@ class DeviceRestrictionManager(private val context: Context) {
     
     fun clearEmiLock() {
         if (isDeviceOwner()) {
+            // Save state
+            context.getSharedPreferences("emi_prefs", Context.MODE_PRIVATE)
+                .edit().putBoolean("isLocked", false).apply()
+
             dpm.clearUserRestriction(adminName, UserManager.DISALLOW_FACTORY_RESET)
             dpm.clearUserRestriction(adminName, UserManager.DISALLOW_SAFE_BOOT)
             dpm.clearUserRestriction(adminName, UserManager.DISALLOW_CONFIG_DATE_TIME)
@@ -51,6 +59,8 @@ class DeviceRestrictionManager(private val context: Context) {
     fun releaseDevice() {
         if (isDeviceOwner()) {
             clearEmiLock()
+            dpm.clearUserRestriction(adminName, UserManager.DISALLOW_APPS_CONTROL)
+
             
             // Unhide the MainActivity so the user can easily uninstall it
             val p = context.packageManager
