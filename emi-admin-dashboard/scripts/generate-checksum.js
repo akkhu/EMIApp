@@ -8,8 +8,8 @@ const apkFileName = versionData.apkFileName;
 const apkPath = apkFileName ? path.join(publicDir, apkFileName) : null;
 
 // Local release.keystore signature checksum
-// (Correct checksum for emilocker-release-key.jks)
-const SIGNATURE_CHECKSUM = 'gRYpPvtWmcBzpDb2nf-tW0d5XJvxIcC3Xplgnk_dbqM';
+// SHA-256 of signing cert: C9:FB:63:DF:9B:CE:23:7A:AE:CC:AD:EE:CD:91:5C:20:8D:12:7C:4F:09:C7:4B:F0:2C:E3:DF:08:32:86:65:C7
+const SIGNATURE_CHECKSUM = 'yftj35vOI3quzK3uzZFcII0SfE8Jx0vwLOPfCDKGZcc';
 
 try {
   if (apkPath && fs.existsSync(apkPath)) {
