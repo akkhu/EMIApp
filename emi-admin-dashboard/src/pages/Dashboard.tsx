@@ -74,7 +74,7 @@ export default function Dashboard() {
     const payload = {
       "android.app.extra.PROVISIONING_DEVICE_ADMIN_COMPONENT_NAME": "com.scmemilocker.app/com.scmemilocker.app.receivers.EmiDeviceAdminReceiver",
       "android.app.extra.PROVISIONING_DEVICE_ADMIN_PACKAGE_DOWNLOAD_LOCATION": `${window.location.origin}/EmiLockerApp_v6.apk`,
-      "android.app.extra.PROVISIONING_DEVICE_ADMIN_PACKAGE_CHECKSUM": checksumData.packageChecksum,
+      "android.app.extra.PROVISIONING_DEVICE_ADMIN_SIGNATURE_CHECKSUM": checksumData.signatureChecksum,
       "android.app.extra.PROVISIONING_SKIP_ENCRYPTION": true,
       "android.app.extra.PROVISIONING_LEAVE_ALL_SYSTEM_APPS_ENABLED": true,
       "android.app.extra.PROVISIONING_SKIP_EDUCATION_SCREENS": true,
