@@ -39,6 +39,30 @@
             </intent-filter>
         </activity>
 
+        <!-- Android 12+ Provisioning: GET_PROVISIONING_MODE handler -->
+        <activity
+            android:name=".ui.GetProvisioningModeActivity"
+            android:exported="true"
+            android:permission="android.permission.BIND_DEVICE_ADMIN"
+            android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter>
+                <action android:name="android.app.action.GET_PROVISIONING_MODE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Android 12+ Provisioning: ADMIN_POLICY_COMPLIANCE handler -->
+        <activity
+            android:name=".ui.AdminPolicyComplianceActivity"
+            android:exported="true"
+            android:permission="android.permission.BIND_DEVICE_ADMIN"
+            android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter>
+                <action android:name="android.app.action.ADMIN_POLICY_COMPLIANCE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
         <!-- Kiosk Trap Screen -->
         <activity
             android:name=".ui.LockedActivity"
