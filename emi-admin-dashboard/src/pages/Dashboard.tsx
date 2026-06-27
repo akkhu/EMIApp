@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { LogOut, Smartphone, Lock, Unlock, ShieldAlert, QrCode, X, Trash2 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
-import checksumData from '../checksum.json';
 import versionData from '../version.json';
 
 const API_URL = '/api'; // Using Vercel serverless functions
