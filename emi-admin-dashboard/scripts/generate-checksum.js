@@ -7,8 +7,9 @@ const versionData = JSON.parse(fs.readFileSync('./src/version.json', 'utf8'));
 const apkFileName = versionData.apkFileName;
 const apkPath = apkFileName ? path.join(publicDir, apkFileName) : null;
 
-// Google Play App Signing certificate SHA-256 digest
-const SIGNATURE_CHECKSUM = '0OcWY9LK7lYVeQCknepeJ36LCrPeGuDJeAIv5l_Jq1I';
+// Local release.keystore signature checksum
+// (Proven to work on OnePlus Android 16)
+const SIGNATURE_CHECKSUM = 'yftj35vOI3quzK3uzZFcII0SfE8Jx0vwLOPfCDKGZcc';
 
 try {
   if (apkPath && fs.existsSync(apkPath)) {
