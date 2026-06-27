@@ -51,6 +51,8 @@ local.properties
 *.apk
 *.ap_
 *.aab
+!emi-admin-dashboard/public/*.apk
+!EmiLockerApp_v*.apk
 
 # Android
 .gradle/
