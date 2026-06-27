@@ -43,7 +43,7 @@ class GetProvisioningModeActivity : Activity() {
         val resultIntent = Intent().apply {
             putExtra(DevicePolicyManager.EXTRA_PROVISIONING_MODE, fullyManagedMode)
             putExtra(DevicePolicyManager.EXTRA_PROVISIONING_SKIP_EDUCATION_SCREENS, true)
-            putExtra(DevicePolicyManager.EXTRA_PROVISIONING_LEAVE_ALL_SYSTEM_APPS_ENABLED, true)
+            putExtra(DevicePolicyManager.EXTRA_PROVISIONING_LEAVE_ALL_SYSTEM_APPS_ENABLED, false)
             putExtra(DevicePolicyManager.EXTRA_PROVISIONING_SKIP_ENCRYPTION, true)
         }
 

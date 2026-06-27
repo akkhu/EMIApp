@@ -77,7 +77,7 @@ export default function Dashboard() {
       "android.app.extra.PROVISIONING_DEVICE_ADMIN_SIGNATURE_CHECKSUM": checksumData.signatureChecksum,
       "android.app.extra.PROVISIONING_DEVICE_ADMIN_PACKAGE_CHECKSUM": checksumData.packageChecksum,
       "android.app.extra.PROVISIONING_SKIP_ENCRYPTION": true,
-      "android.app.extra.PROVISIONING_LEAVE_ALL_SYSTEM_APPS_ENABLED": true,
+      "android.app.extra.PROVISIONING_LEAVE_ALL_SYSTEM_APPS_ENABLED": false,
       "android.app.extra.PROVISIONING_SKIP_EDUCATION_SCREENS": true,
       "android.app.extra.PROVISIONING_USE_MOBILE_DATA": true
     };
