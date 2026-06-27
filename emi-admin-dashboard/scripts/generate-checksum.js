@@ -1,14 +1,17 @@
 import fs from 'fs';
 import crypto from 'crypto';
+import path from 'path';
 
-const apkPath = './public/EmiLockerApp.apk';
+const publicDir = './public';
+const apkFiles = fs.readdirSync(publicDir).filter(file => file.endsWith('.apk'));
+const apkPath = apkFiles.length > 0 ? path.join(publicDir, apkFiles[0]) : null;
 
 // Google Play App Signing certificate SHA-256 digest (constant across builds)
 // This only changes if Google rotates the signing key in Play Console
 const GOOGLE_SIGNING_CERT_CHECKSUM = '0OcWY9LK7lYVeQCknepeJ36LCrPeGuDJeAIv5l_Jq1I';
 
 try {
-  if (fs.existsSync(apkPath)) {
+  if (apkPath && fs.existsSync(apkPath)) {
     const fileBuffer = fs.readFileSync(apkPath);
     const hashSum = crypto.createHash('sha256');
     hashSum.update(fileBuffer);
