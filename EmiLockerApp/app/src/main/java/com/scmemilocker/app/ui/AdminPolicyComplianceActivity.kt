@@ -36,10 +36,5 @@ class AdminPolicyComplianceActivity : Activity() {
         // Signal that policy compliance is satisfied
         setResult(RESULT_OK)
         finish()
-
-        // Launch the main registration activity
-        val launchIntent = Intent(this, MainActivity::class.java)
-        launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        startActivity(launchIntent)
     }
 }
