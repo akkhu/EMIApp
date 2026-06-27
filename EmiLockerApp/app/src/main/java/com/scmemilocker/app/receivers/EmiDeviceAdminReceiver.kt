@@ -16,9 +16,6 @@ class EmiDeviceAdminReceiver : DeviceAdminReceiver() {
         super.onProfileProvisioningComplete(context, intent)
         Log.i("EmiDeviceAdmin", "Provisioning Complete")
         
-        // Automatically launch MainActivity for registration
-        val launchIntent = Intent(context, com.scmemilocker.app.ui.MainActivity::class.java)
-        launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        context.startActivity(launchIntent)
+        // Handled by AdminPolicyComplianceActivity now
     }
 }
