@@ -4,9 +4,10 @@ import android.app.Activity
 import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
+import com.scmemilocker.app.R
 import com.scmemilocker.app.receivers.EmiDeviceAdminReceiver
 
 /**
@@ -21,6 +22,7 @@ class AdminPolicyComplianceActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_compliance)
         Log.i("EmiProvisioning", "AdminPolicyCompliance called - provisioning complete")
 
         val dpm = getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
@@ -33,8 +35,10 @@ class AdminPolicyComplianceActivity : Activity() {
             Log.e("EmiProvisioning", "Error setting profile enabled: ${e.message}")
         }
 
-        // Signal that policy compliance is satisfied
-        setResult(RESULT_OK)
-        finish()
+        findViewById<Button>(R.id.btn_continue_setup).setOnClickListener {
+            // Signal that policy compliance is satisfied only AFTER the user clicks continue
+            setResult(RESULT_OK)
+            finish()
+        }
     }
 }
