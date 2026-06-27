@@ -7,6 +7,7 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
 import com.scmemilocker.app.R
 import com.scmemilocker.app.receivers.EmiDeviceAdminReceiver
 
@@ -18,7 +19,7 @@ import com.scmemilocker.app.receivers.EmiDeviceAdminReceiver
  * Without this activity, provisioning hangs on "Just a sec" because the
  * system is waiting for the DPC to signal that setup is complete.
  */
-class AdminPolicyComplianceActivity : Activity() {
+class AdminPolicyComplianceActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

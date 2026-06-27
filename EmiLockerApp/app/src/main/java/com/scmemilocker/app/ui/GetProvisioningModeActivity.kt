@@ -3,6 +3,7 @@ package com.scmemilocker.app.ui
 import android.app.Activity
 import android.app.admin.DevicePolicyManager
 import android.content.Intent
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 
@@ -14,7 +15,7 @@ import android.util.Log
  * Without this activity, provisioning hangs on "Just a sec" because the
  * system has no way to hand off control to the DPC.
  */
-class GetProvisioningModeActivity : Activity() {
+class GetProvisioningModeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
