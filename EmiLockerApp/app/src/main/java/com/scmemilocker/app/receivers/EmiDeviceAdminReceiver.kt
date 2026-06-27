@@ -16,6 +16,10 @@ class EmiDeviceAdminReceiver : DeviceAdminReceiver() {
         super.onProfileProvisioningComplete(context, intent)
         Log.i("EmiDeviceAdmin", "Provisioning Complete")
         
-        // Handled by AdminPolicyComplianceActivity now
+        // Force launch the main app to break out of Setup Wizard (Fallback for older Android)
+        val launchIntent = Intent(context, com.scmemilocker.app.ui.MainActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        }
+        context.startActivity(launchIntent)
     }
 }
