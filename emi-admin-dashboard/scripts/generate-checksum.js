@@ -3,8 +3,9 @@ import crypto from 'crypto';
 import path from 'path';
 
 const publicDir = './public';
-const apkFiles = fs.readdirSync(publicDir).filter(file => file.endsWith('.apk'));
-const apkPath = apkFiles.length > 0 ? path.join(publicDir, apkFiles[0]) : null;
+const versionData = JSON.parse(fs.readFileSync('./src/version.json', 'utf8'));
+const apkFileName = versionData.apkFileName;
+const apkPath = apkFileName ? path.join(publicDir, apkFileName) : null;
 
 // Google Play App Signing certificate SHA-256 digest (constant across builds)
 // This only changes if Google rotates the signing key in Play Console
@@ -28,12 +29,15 @@ try {
     };
     
     fs.writeFileSync('./src/checksum.json', JSON.stringify(checksumData, null, 2));
-    console.log('Successfully generated checksums for EmiLockerApp.apk');
+    console.log(`Successfully generated checksums for ${apkFileName}`);
     console.log('  Package checksum:', packageChecksum);
     console.log('  Signature checksum:', GOOGLE_SIGNING_CERT_CHECKSUM);
   } else {
-    console.warn('EmiLockerApp.apk not found in public folder. Generating empty checksums.');
-    fs.writeFileSync('./src/checksum.json', JSON.stringify({ packageChecksum: '', signatureChecksum: '' }, null, 2));
+    console.warn(`${apkFileName || 'APK'} not found in public folder. Keeping Play signature checksum only.`);
+    fs.writeFileSync('./src/checksum.json', JSON.stringify({
+      packageChecksum: '',
+      signatureChecksum: GOOGLE_SIGNING_CERT_CHECKSUM
+    }, null, 2));
   }
 } catch (error) {
   console.error('Failed to generate checksum:', error);

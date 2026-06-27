@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
         val btnRegister = findViewById<Button>(R.id.btnRegister)
         val tvAppVersion = findViewById<TextView>(R.id.tvAppVersion)
         
-        tvAppVersion.text = "Version: 1.1"
+        tvAppVersion.text = "Version: ${packageManager.getPackageInfo(packageName, 0).versionName}"
 
         if (!restrictionManager.isDeviceOwner()) {
             tvStatus.text = "Status: Device Admin NOT Provisioned"
