@@ -7,9 +7,8 @@ const versionData = JSON.parse(fs.readFileSync('./src/version.json', 'utf8'));
 const apkFileName = versionData.apkFileName;
 const apkPath = apkFileName ? path.join(publicDir, apkFileName) : null;
 
-// Local release.keystore signature checksum
-// (Since we are testing locally without Play Store App Signing)
-const SIGNATURE_CHECKSUM = 'yftj35vOI3quzK3uzZFcII0SfE8Jx0vwLOPfCDKGZcc';
+// Google Play App Signing certificate SHA-256 digest
+const SIGNATURE_CHECKSUM = '0OcWY9LK7lYVeQCknepeJ36LCrPeGuDJeAIv5l_Jq1I';
 
 try {
   if (apkPath && fs.existsSync(apkPath)) {
