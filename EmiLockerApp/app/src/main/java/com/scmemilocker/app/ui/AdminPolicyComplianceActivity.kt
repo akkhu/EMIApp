@@ -1,9 +1,13 @@
 package com.scmemilocker.app.ui
 
 import android.app.Activity
+import android.app.admin.DevicePolicyManager
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import com.scmemilocker.app.receivers.EmiDeviceAdminReceiver
 
 /**
  * Required by Android 12+ for Device Owner provisioning.
@@ -18,6 +22,16 @@ class AdminPolicyComplianceActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.i("EmiProvisioning", "AdminPolicyCompliance called - provisioning complete")
+
+        val dpm = getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
+        val adminName = ComponentName(this, EmiDeviceAdminReceiver::class.java)
+
+        // Tell the Android system that we are done with the provisioning phase!
+        try {
+            dpm.setProfileEnabled(adminName)
+        } catch (e: Exception) {
+            Log.e("EmiProvisioning", "Error setting profile enabled: ${e.message}")
+        }
 
         // Signal that policy compliance is satisfied
         setResult(RESULT_OK)
