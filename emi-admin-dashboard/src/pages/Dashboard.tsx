@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { LogOut, Smartphone, Lock, Unlock, ShieldAlert, QrCode, X, Trash2 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
-import checksumData from '../checksum.json';
 import versionData from '../version.json';
 
 const API_URL = '/api'; // Using Vercel serverless functions
@@ -73,9 +72,7 @@ export default function Dashboard() {
     // Android Device Owner Provisioning QR Code Payload
     const payload = {
       "android.app.extra.PROVISIONING_DEVICE_ADMIN_COMPONENT_NAME": "com.scmemilocker.app/com.scmemilocker.app.receivers.EmiDeviceAdminReceiver",
-      "android.app.extra.PROVISIONING_DEVICE_ADMIN_PACKAGE_DOWNLOAD_LOCATION": `${window.location.origin}/${versionData.apkFileName}`,
-      "android.app.extra.PROVISIONING_DEVICE_ADMIN_SIGNATURE_CHECKSUM": checksumData.signatureChecksum,
-      "android.app.extra.PROVISIONING_DEVICE_ADMIN_PACKAGE_CHECKSUM": checksumData.packageChecksum,
+      "android.app.extra.PROVISIONING_DEVICE_ADMIN_PACKAGE_NAME": "com.scmemilocker.app",
       "android.app.extra.PROVISIONING_SKIP_ENCRYPTION": true,
       "android.app.extra.PROVISIONING_SKIP_EDUCATION_SCREENS": true,
       "android.app.extra.PROVISIONING_USE_MOBILE_DATA": true
