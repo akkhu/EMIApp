@@ -11,6 +11,8 @@ class AdminPolicyComplianceActivity : Activity() {
         Log.i("EmiProvisioning", "AdminPolicyCompliance called")
 
         setResult(RESULT_OK)
-        finish()
+        android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+            finish()
+        }, 500)
     }
 }

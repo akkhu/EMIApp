@@ -48,6 +48,8 @@ class GetProvisioningModeActivity : Activity() {
         }
 
         setResult(RESULT_OK, resultIntent)
-        finish()
+        android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+            finish()
+        }, 500)
     }
 }
