@@ -31,7 +31,7 @@
         android:layout_height="wrap_content"
         android:text="Continue"
         android:padding="16dp"
-        android:backgroundTint="@color/design_default_color_primary"
+        android:backgroundTint="#007BFF"
         android:textColor="@android:color/white"/>
 
 </LinearLayout>
