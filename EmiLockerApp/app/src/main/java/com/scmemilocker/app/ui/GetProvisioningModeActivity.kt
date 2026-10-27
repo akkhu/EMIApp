@@ -20,6 +20,7 @@ class GetProvisioningModeActivity : Activity() {
             intent.getIntegerArrayListExtra(DevicePolicyManager.EXTRA_PROVISIONING_ALLOWED_PROVISIONING_MODES)
         else null
         Log.i("EmiProvisioning", "GET_PROVISIONING_MODE allowed=$allowed")
+        com.scmemilocker.app.ProvLog.send(this, "get_provisioning_mode", "allowed=$allowed")
 
         if (allowed != null && allowed.isNotEmpty() && !allowed.contains(fullyManaged)) {
             setResult(RESULT_CANCELED)

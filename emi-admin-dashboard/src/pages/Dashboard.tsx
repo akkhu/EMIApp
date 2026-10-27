@@ -83,10 +83,11 @@ export default function Dashboard() {
     // Android Device Owner QR provisioning payload.
     // Using SIGNATURE_CHECKSUM (the signing-cert hash) instead of PACKAGE_CHECKSUM
     // so the QR stays valid across rebuilds. The APK is served at a STABLE path
-    // (/emilocker.apk) so this QR never needs regenerating.
+    // (/emilocker.apk). The QR always uses the PRODUCTION domain (never a
+    // protected preview URL) and goes through /api/apk, which logs the download.
     const payload = {
       "android.app.extra.PROVISIONING_DEVICE_ADMIN_COMPONENT_NAME": "com.scmemilocker.app/com.scmemilocker.app.receivers.EmiDeviceAdminReceiver",
-      "android.app.extra.PROVISIONING_DEVICE_ADMIN_PACKAGE_DOWNLOAD_LOCATION": `${window.location.origin}/emilocker.apk`,
+      "android.app.extra.PROVISIONING_DEVICE_ADMIN_PACKAGE_DOWNLOAD_LOCATION": 'https://emi-app-7pq1.vercel.app/api/apk',
       "android.app.extra.PROVISIONING_DEVICE_ADMIN_SIGNATURE_CHECKSUM": checksumData.signatureChecksum,
       "android.app.extra.PROVISIONING_LEAVE_ALL_SYSTEM_APPS_ENABLED": true,
       "android.app.extra.PROVISIONING_SKIP_ENCRYPTION": true

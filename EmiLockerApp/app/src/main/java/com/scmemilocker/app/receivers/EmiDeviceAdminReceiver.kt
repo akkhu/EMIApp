@@ -21,6 +21,7 @@ class EmiDeviceAdminReceiver : DeviceAdminReceiver() {
     override fun onEnabled(context: Context, intent: Intent) {
         super.onEnabled(context, intent)
         Log.i("EmiDeviceAdmin", "Device Owner enabled")
+        com.scmemilocker.app.ProvLog.send(context, "device_admin_enabled")
         // Don't touch policies mid-setup; RegisterWorker applies them right after.
         com.scmemilocker.app.workers.RegisterWorker.enqueue(context)
     }
@@ -28,6 +29,7 @@ class EmiDeviceAdminReceiver : DeviceAdminReceiver() {
     override fun onProfileProvisioningComplete(context: Context, intent: Intent) {
         super.onProfileProvisioningComplete(context, intent)
         Log.i("EmiDeviceAdmin", "Provisioning complete")
+        com.scmemilocker.app.ProvLog.send(context, "provisioning_complete")
         com.scmemilocker.app.workers.RegisterWorker.enqueue(context)
     }
 

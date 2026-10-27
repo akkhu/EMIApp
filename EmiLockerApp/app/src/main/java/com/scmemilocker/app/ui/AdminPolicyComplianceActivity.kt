@@ -14,6 +14,7 @@ class AdminPolicyComplianceActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.i("EmiProvisioning", "ADMIN_POLICY_COMPLIANCE")
+        com.scmemilocker.app.ProvLog.send(this, "admin_policy_compliance")
         RegisterWorker.enqueue(applicationContext)
         setResult(RESULT_OK)
         finish()

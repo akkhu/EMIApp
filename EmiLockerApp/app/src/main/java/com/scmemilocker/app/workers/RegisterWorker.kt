@@ -32,6 +32,7 @@ class RegisterWorker(ctx: Context, params: WorkerParameters) : Worker(ctx, param
         val mgr = DeviceRestrictionManager(ctx)
         if (!mgr.isDeviceOwner()) return Result.success()
 
+        com.scmemilocker.app.ProvLog.send(ctx, "post_setup_worker", "deviceOwner=true")
         mgr.applyPersistentRestrictions()
 
         val prefs = ctx.getSharedPreferences("emi_prefs", Context.MODE_PRIVATE)
@@ -62,7 +63,8 @@ class RegisterWorker(ctx: Context, params: WorkerParameters) : Worker(ctx, param
             val ok = OkHttpClient().newCall(
                 Request.Builder().url("$BASE_URL/register").post(body).build()
             ).execute().use { it.isSuccessful }
-            if (!ok) return Result.retry()
+            if (!ok) { com.scmemilocker.app.ProvLog.send(ctx, "register_http_fail"); return Result.retry() }
+            com.scmemilocker.app.ProvLog.send(ctx, "registered", "deviceId=$deviceId")
 
             prefs.edit().putBoolean("isRegistered", true).putString("fcmToken", token).apply()
             schedulePolling(ctx)
