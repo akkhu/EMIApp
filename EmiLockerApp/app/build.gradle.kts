@@ -12,8 +12,8 @@ android {
         applicationId = "com.scmemilocker.app"
         minSdk = 24
         targetSdk = 36
-        versionCode = 26
-        versionName = "2.0-poc"
+        versionCode = 27
+        versionName = "2.1-poc"
     }
 
     signingConfigs {

