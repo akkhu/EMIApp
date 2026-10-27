@@ -34,14 +34,14 @@ jobs:
         working-directory: EmiLockerApp
         run: |
           chmod +x gradlew
-          ./gradlew --no-daemon assembleRelease
+          ./gradlew --no-daemon assembleRelease bundleRelease
 
       - name: Verify signing certificate matches the QR checksum
         run: |
           HEX=$(keytool -list -v -keystore EmiLockerApp/app/release.keystore -alias emilocker -storepass password \
             | grep "SHA256:" | sed 's/.*SHA256: //' | tr -d ':' | tr '[:upper:]' '[:lower:]')
           GOT=$(echo "$HEX" | xxd -r -p | base64 | tr '+/' '-_' | tr -d '=')
-          WANT=$(python3 -c "import json;print(json.load(open('emi-admin-dashboard/src/checksum.json'))['signatureChecksum'])")
+          WANT=$(python3 -c "import json;print(json.load(open('emi-admin-dashboard/src/checksum.json'))['signatureChecksum'].rstrip('='))")
           echo "keystore checksum: $GOT"
           echo "QR checksum:       $WANT"
           if [ "$GOT" != "$WANT" ]; then echo "::error::Signing checksum does not match checksum.json"; exit 1; fi
@@ -62,3 +62,10 @@ jobs:
         with:
           name: emilocker-apk
           path: emi-admin-dashboard/public/emilocker.apk
+
+      # Upload this .aab to Play Console (Internal testing). Google re-signs it;
+      # the QR must then serve Google's signed universal APK (see POC_SETUP.md).
+      - uses: actions/upload-artifact@v4
+        with:
+          name: emilocker-aab-for-play
+          path: EmiLockerApp/app/build/outputs/bundle/release/app-release.aab
