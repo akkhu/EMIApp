@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.UserManager
@@ -85,13 +86,29 @@ class DeviceRestrictionManager(private val context: Context) {
     /** Full lock: ensure restrictions are on, then show the kiosk screen. */
     fun enforceEmiLock() {
         if (!isDeviceOwner()) return
+        val wasLocked = prefs.getBoolean("isLocked", false)
         prefs.edit().putBoolean("isLocked", true).apply()
         applyPersistentRestrictions()
 
-        val lockIntent = Intent(context, LockedActivity::class.java).apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        // Android Go cannot grant "draw over other apps", and Android only lets
+        // apps open screens from the background in narrow cases. So the lock must
+        // not depend on startActivity() alone:
+        //  1. Our lock screen becomes the HOME screen (every Home press / reboot lands on it).
+        //  2. Every other launchable app is suspended (opening one shows "app paused").
+        //  3. On the first lock, the screen is turned off; on wake the user lands on our home.
+        setLockHome(true)
+        setOtherAppsSuspended(true)
+
+        try {
+            context.startActivity(Intent(context, LockedActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            })
+        } catch (e: Exception) {
+            Log.w("EmiLock", "Direct launch blocked: ${e.message}")
         }
-        context.startActivity(lockIntent)
+        if (!wasLocked) {
+            try { dpm.lockNow() } catch (_: Exception) {}
+        }
     }
 
     /**
@@ -101,12 +118,16 @@ class DeviceRestrictionManager(private val context: Context) {
     fun clearEmiLock() {
         if (!isDeviceOwner()) return
         prefs.edit().putBoolean("isLocked", false).apply()
-        // LockedActivity observes this flag and finishes itself; nothing else to undo.
+        setOtherAppsSuspended(false)
+        setLockHome(false)
+        // LockedActivity polls and finishes itself; the normal launcher is home again.
     }
 
     /** Loan fully paid: strip everything and relinquish Device Owner. */
     fun releaseDevice() {
         if (!isDeviceOwner()) return
+        setOtherAppsSuspended(false)
+        setLockHome(false)
 
         val restrictions = listOf(
             UserManager.DISALLOW_SAFE_BOOT,
@@ -209,5 +230,60 @@ class DeviceRestrictionManager(private val context: Context) {
             dpm.setApplicationRestrictions(admin, GMS, Bundle())
             notifyGmsFrpChanged()
         } catch (_: Exception) {}
+    }
+
+    // ---------------- Lock enforcement that works on Android Go ----------------
+
+    private val homeAlias = ComponentName(context.packageName, "com.scmemilocker.app.ui.LockHomeAlias")
+
+    /** Makes the lock screen the device HOME while locked; restores the launcher on unlock. */
+    private fun setLockHome(enabled: Boolean) {
+        try {
+            context.packageManager.setComponentEnabledSetting(
+                homeAlias,
+                if (enabled) PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+                else PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                PackageManager.DONT_KILL_APP
+            )
+        } catch (e: Exception) { Log.w("EmiLock", "home alias toggle failed: ${e.message}") }
+        try {
+            if (enabled) {
+                val filter = IntentFilter(Intent.ACTION_MAIN).apply {
+                    addCategory(Intent.CATEGORY_HOME)
+                    addCategory(Intent.CATEGORY_DEFAULT)
+                }
+                dpm.addPersistentPreferredActivity(admin, filter, homeAlias)
+            } else {
+                dpm.clearPackagePersistentPreferredActivities(admin, context.packageName)
+            }
+        } catch (e: Exception) { Log.w("EmiLock", "preferred home failed: ${e.message}") }
+    }
+
+    /** Suspends every launchable app except ours, the phone dialer (emergency calls) and Settings. */
+    private fun setOtherAppsSuspended(suspend: Boolean) {
+        val key = "suspendedPkgs"
+        if (suspend) {
+            val keep = mutableSetOf(context.packageName, "com.android.settings")
+            try {
+                val tm = context.getSystemService(Context.TELECOM_SERVICE) as android.telecom.TelecomManager
+                tm.defaultDialerPackage?.let { keep.add(it) }
+            } catch (_: Exception) {}
+            val launcherIntent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
+            val targets = context.packageManager.queryIntentActivities(launcherIntent, 0)
+                .map { it.activityInfo.packageName }.distinct().filter { it !in keep }
+            val failed = try {
+                dpm.setPackagesSuspended(admin, targets.toTypedArray(), true).toSet()
+            } catch (e: Exception) {
+                Log.w("EmiLock", "suspend failed: ${e.message}"); targets.toSet()
+            }
+            val done = (prefs.getStringSet(key, emptySet()) ?: emptySet()) + targets.filter { it !in failed }
+            prefs.edit().putStringSet(key, done).apply()
+        } else {
+            val list = prefs.getStringSet(key, emptySet()) ?: emptySet()
+            if (list.isNotEmpty()) {
+                try { dpm.setPackagesSuspended(admin, list.toTypedArray(), false) } catch (_: Exception) {}
+            }
+            prefs.edit().remove(key).apply()
+        }
     }
 }
