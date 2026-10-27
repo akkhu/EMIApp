@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { LogOut, Smartphone, Lock, Unlock, ShieldAlert, QrCode, X, Trash2 } from 'lucide-react';
-import { QRCodeSVG } from 'qrcode.react';
+import { QRCodeCanvas } from 'qrcode.react';
 import versionData from '../version.json';
 import checksumData from '../checksum.json';
 
@@ -22,6 +22,16 @@ export default function Dashboard() {
   const [devices, setDevices] = useState<Device[]>([]);
   const [loading, setLoading] = useState(true);
   const [showOnboardingQr, setShowOnboardingQr] = useState(false);
+  const [qrFullscreen, setQrFullscreen] = useState(false);
+
+  const downloadQr = () => {
+    const canvas = document.getElementById('onboarding-qr') as HTMLCanvasElement | null;
+    if (!canvas) return;
+    const a = document.createElement('a');
+    a.href = canvas.toDataURL('image/png');
+    a.download = 'emi-onboarding-qr.png';
+    a.click();
+  };
 
   const fetchDevices = async () => {
     try {
@@ -188,6 +198,14 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {qrFullscreen && (
+        <div onClick={() => setQrFullscreen(false)} className="fixed inset-0 z-[60] bg-white flex flex-col items-center justify-center cursor-pointer">
+          <QRCodeCanvas value={getOnboardingUrl()} size={1024} level="L" marginSize={4}
+            style={{ width: 'min(92vw, 88vh)', height: 'min(92vw, 88vh)', imageRendering: 'pixelated' }} />
+          <p className="text-gray-500 text-sm mt-2">Tap anywhere to close · Max screen brightness · Hold phone 20–30 cm away</p>
+        </div>
+      )}
+
       {/* Onboarding QR Code Modal */}
       {showOnboardingQr && (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
@@ -201,13 +219,22 @@ export default function Dashboard() {
               </button>
             </div>
             
-            <div className="bg-white p-4 rounded-xl flex justify-center items-center">
-              <QRCodeSVG 
-                value={getOnboardingUrl()} 
-                size={200}
-                level="H"
-                includeMargin={false}
+            <div className="bg-white p-2 rounded-xl flex justify-center items-center">
+              {/* Low error-correction + 4-module quiet zone + large size: scannable by low-end (Android Go / itel) cameras */}
+              <QRCodeCanvas
+                id="onboarding-qr"
+                value={getOnboardingUrl()}
+                size={1024}
+                level="L"
+                marginSize={4}
+                bgColor="#FFFFFF"
+                fgColor="#000000"
+                style={{ width: '100%', height: 'auto', imageRendering: 'pixelated' }}
               />
+            </div>
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              <button onClick={() => setQrFullscreen(true)} className="px-3 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 rounded-lg text-sm">Full screen</button>
+              <button onClick={downloadQr} className="px-3 py-2 bg-white/10 hover:bg-white/20 text-gray-200 rounded-lg text-sm">Download PNG</button>
             </div>
             
             <div className="mt-6 text-center">
