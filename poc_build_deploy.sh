@@ -51,10 +51,7 @@ B64=$(echo "$HEX" | xxd -r -p | base64 | tr '+/' '-_' | tr -d '=')
 WANT=$(grep -o '"signatureChecksum": *"[^"]*"' "$ROOT/emi-admin-dashboard/src/checksum.json" | sed 's/.*"\([^"]*\)"$/\1/')
 echo "    keystore cert checksum : $B64"
 echo "    checksum.json expects  : $WANT"
-if [ "$B64" != "$WANT" ]; then
-  echo "!!  MISMATCH. Updating checksum.json to the keystore value."
-  printf '{\n  "signatureChecksum": "%s"\n}\n' "$B64" > "$ROOT/emi-admin-dashboard/src/checksum.json"
-fi
+echo "    (QR intentionally uses Google's Play signing key; checksum.json is not changed.)"
 echo "    APK sha256: $(shasum -a 256 "$STABLE_APK" | awk '{print $1}')"
 
 echo "==> Committing and pushing (Vercel will auto-deploy)"

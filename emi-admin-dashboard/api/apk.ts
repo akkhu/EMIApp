@@ -12,5 +12,5 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   console.log('PROVLOG', JSON.stringify(doc));
   try { await addLog(doc); } catch (e) { console.warn('apk log failed', e); }
   res.setHeader('Cache-Control', 'no-store');
-  res.redirect(302, 'https://emi-app-7pq1.vercel.app/emilocker.apk');
+  res.redirect(302, 'https://emi-app-7pq1.vercel.app/emilocker-play.apk');
 }

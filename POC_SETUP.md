@@ -164,3 +164,28 @@ To re-lock that phone afterwards: factory reset from Settings and scan the QR ag
 - Needs Google Play services on the phone.
 - Doesn't stop someone flashing new firmware with a PC tool. Only Zero-touch,
   Knox Guard, or Device Lock Controller survive that (production path).
+
+---
+
+## 9. IMPORTANT: the QR must serve the Google Play-signed APK
+
+The app is published on Google Play, and Play App Signing re-signs it with
+Google's key (`D0:E7:16:63:…`). A copy signed with the local key (`C9:FB:63:DF:…`)
+has the same package name but a different signature, so Android refuses it during
+QR setup ("Something went wrong" after **Next**). Google's TestDPC worked on the
+same phones, which is how this was found.
+
+The QR therefore serves `/emilocker-play.apk` (Google-signed) and uses the Play
+signing key checksum `0OcWY9LK7lYVeQCknepeJ36LCrPeGuDJeAIv5l_Jq1I=`.
+
+### Releasing a new app version
+1. Push the code; GitHub Actions builds it. Download the **emilocker-aab-for-play**
+   artifact from the run.
+2. Play Console → Testing → **Internal testing** → Create new release → upload the `.aab`.
+3. Play Console → **App bundle explorer** → that version → Downloads →
+   **Signed, universal APK**.
+4. Replace `emi-admin-dashboard/public/emilocker-play.apk` with it, commit and push.
+
+The QR and checksum never change. Keep Play Console → *Protected with Play* →
+**Automatic protection ("Prevent unofficial installs") OFF**, otherwise installs
+from the QR are blocked.
