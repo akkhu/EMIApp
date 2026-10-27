@@ -1,0 +1,64 @@
+# Builds the signed EMI Locker APK on GitHub's servers and publishes it to
+# emi-admin-dashboard/public/emilocker.apk, so Vercel serves it for QR setup.
+# Runs on every push that changes the Android app, or manually from the
+# Actions tab ("Run workflow"). Replaces running poc_build_deploy.sh on a Mac.
+name: Build & publish EMI APK
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'EmiLockerApp/**'
+      - '.github/workflows/build-apk.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-apk
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Build signed release APK
+        working-directory: EmiLockerApp
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon assembleRelease
+
+      - name: Verify signing certificate matches the QR checksum
+        run: |
+          HEX=$(keytool -list -v -keystore EmiLockerApp/app/release.keystore -alias emilocker -storepass password \
+            | grep "SHA256:" | sed 's/.*SHA256: //' | tr -d ':' | tr '[:upper:]' '[:lower:]')
+          GOT=$(echo "$HEX" | xxd -r -p | base64 | tr '+/' '-_' | tr -d '=')
+          WANT=$(python3 -c "import json;print(json.load(open('emi-admin-dashboard/src/checksum.json'))['signatureChecksum'])")
+          echo "keystore checksum: $GOT"
+          echo "QR checksum:       $WANT"
+          if [ "$GOT" != "$WANT" ]; then echo "::error::Signing checksum does not match checksum.json"; exit 1; fi
+
+      - name: Publish APK for Vercel
+        run: |
+          cp EmiLockerApp/app/build/outputs/apk/release/app-release.apk emi-admin-dashboard/public/emilocker.apk
+          sha256sum emi-admin-dashboard/public/emilocker.apk
+          git config user.name "akkhu"
+          git config user.email "34065729+akkhu@users.noreply.github.com"
+          git add -f emi-admin-dashboard/public/emilocker.apk
+          if git diff --cached --quiet; then echo "APK unchanged"; exit 0; fi
+          git commit -m "ci: publish emilocker.apk (${GITHUB_SHA::7})"
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: emilocker-apk
+          path: emi-admin-dashboard/public/emilocker.apk

@@ -21,6 +21,15 @@ if ! java -version 2>&1 | grep -qE '"(17|18|19|2[0-9])'; then
   fi
 fi
 
+
+echo "==> Checking Factory Reset Protection account"
+if grep -q 'listOf(\s*""' "$APP_DIR/app/src/main/java/com/scmemilocker/app/Config.kt" 2>/dev/null || \
+   grep -qE 'listOf\(\s*$' "$APP_DIR/app/src/main/java/com/scmemilocker/app/Config.kt" && grep -qE '^\s*""' "$APP_DIR/app/src/main/java/com/scmemilocker/app/Config.kt"; then
+  echo "!!  WARNING: FRP_ACCOUNT_IDS in Config.kt is empty."
+  echo "    A recovery-mode reset will REMOVE the lock. See POC_SETUP.md section 8."
+  read -p "    Continue anyway? [y/N] " ans; [ "$ans" = "y" ] || exit 1
+fi
+
 echo "==> Building signed release APK"
 cd "$APP_DIR"
 ./gradlew --no-daemon clean assembleRelease

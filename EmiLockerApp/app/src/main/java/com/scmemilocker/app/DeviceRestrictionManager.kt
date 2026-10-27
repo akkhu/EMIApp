@@ -1,6 +1,8 @@
 package com.scmemilocker.app
 
 import android.app.admin.DevicePolicyManager
+import android.app.admin.FactoryResetProtectionPolicy
+import android.os.Bundle
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -68,6 +70,9 @@ class DeviceRestrictionManager(private val context: Context) {
                 Log.w("EmiRestrict", "USB data signaling block unsupported: ${e.message}")
             }
         }
+
+        // Survive a recovery-mode factory reset: require the lender's Google account.
+        applyFrpPolicy()
 
         // Whitelist ourselves for kiosk (lock-task) mode up front.
         try {
@@ -143,7 +148,66 @@ class DeviceRestrictionManager(private val context: Context) {
             context.startActivity(intent)
         } catch (_: Exception) {}
 
+        // Paid off: remove FRP so a reset never asks for the lender's account.
+        clearFrpPolicy()
+
         // Relinquish Device Owner permanently (also auto-clears remaining policies).
         try { dpm.clearDeviceOwnerApp(context.packageName) } catch (_: Exception) {}
+    }
+
+    // ---------------- Factory Reset Protection ----------------
+
+    private val GMS = "com.google.android.gms"
+    private val FRP_KEY = "factoryResetProtectionAdmin"
+    private val FRP_CHANGED = "com.google.android.gms.auth.FRP_CONFIG_CHANGED"
+
+    private fun notifyGmsFrpChanged() {
+        try {
+            context.sendBroadcast(Intent(FRP_CHANGED).setPackage(GMS))
+        } catch (_: Exception) {}
+    }
+
+    /** Ties the device to the lender's Google account(s) after any factory reset. */
+    fun applyFrpPolicy() {
+        if (!isDeviceOwner()) return
+        val ids = Config.FRP_ACCOUNT_IDS.filter { it.isNotBlank() }
+        if (ids.isEmpty()) {
+            Log.w("EmiFRP", "FRP account not configured (Config.kt) - skipping")
+            return
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            try {
+                val policy = FactoryResetProtectionPolicy.Builder()
+                    .setFactoryResetProtectionAccounts(ids)
+                    .setFactoryResetProtectionEnabled(true)
+                    .build()
+                dpm.setFactoryResetProtectionPolicy(admin, policy)
+                Log.i("EmiFRP", "FRP policy set (API 30+)")
+            } catch (e: Exception) {
+                Log.w("EmiFRP", "FRP policy unsupported on this device: ${e.message}")
+            }
+        } else {
+            // Android 7-10: legacy method via Google Play services app restrictions.
+            try {
+                val b = Bundle().apply { putStringArray(FRP_KEY, ids.toTypedArray()) }
+                dpm.setApplicationRestrictions(admin, GMS, b)
+                notifyGmsFrpChanged()
+                Log.i("EmiFRP", "FRP set via Play services (legacy)")
+            } catch (e: Exception) {
+                Log.w("EmiFRP", "Legacy FRP failed: ${e.message}")
+            }
+        }
+    }
+
+    /** Removes the lender account requirement (called on release). */
+    fun clearFrpPolicy() {
+        if (!isDeviceOwner()) return
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            try { dpm.setFactoryResetProtectionPolicy(admin, null) } catch (_: Exception) {}
+        }
+        try {
+            dpm.setApplicationRestrictions(admin, GMS, Bundle())
+            notifyGmsFrpChanged()
+        } catch (_: Exception) {}
     }
 }

@@ -67,6 +67,13 @@ Applied the moment the phone is provisioned, and kept until **Release**
 
 ## 4. Build & deploy (run on your Mac)
 
+> **No Mac needed:** pushing any change under `EmiLockerApp/` to GitHub triggers
+> the "Build & publish EMI APK" workflow (`.github/workflows/build-apk.yml`). It
+> builds the signed APK on GitHub's servers, publishes `emilocker.apk`, and pushes,
+> which redeploys Vercel. You can also run it manually from the repo's
+> **Actions** tab → *Build & publish EMI APK* → **Run workflow**.
+
+
 ```bash
 cd /Users/akhilesh/Documents/GitHub/EMIApp
 ./poc_build_deploy.sh
@@ -120,3 +127,40 @@ On the dashboard, the device appears (shown by model). Then:
 4. **Signature checksum** in `src/checksum.json` matches the keystore (the deploy
    script checks and auto-corrects this).
 5. Re-generate the QR after deploy and scan the fresh one.
+
+---
+
+## 8. Factory Reset Protection (survives a recovery-mode reset)
+
+The app blocks reset from Settings, but no app can block a reset from **recovery
+mode** (power + volume keys at boot). FRP closes that gap: after such a reset,
+the phone refuses to finish setup until someone signs in with **your lender
+Google account**. A wiped phone is useless to the customer, and you can recover it.
+
+- Android 11+: official `FactoryResetProtectionPolicy`.
+- Android 7–10 (incl. most Android Go): Google Play services legacy method.
+- Cleared automatically on **Release**.
+
+### One-time setup
+1. Create a **dedicated** Google account for recovery (e.g. `yourco.emi.recovery@gmail.com`).
+   Don't use a personal account. Keep the password safe; you'll need it to recover phones.
+2. Get its **numeric account ID** (not the email):
+   - Open https://developers.google.com/people/api/rest/v1/people/get
+   - In "Try this method": `resourceName` = `people/me`, `personFields` = `metadata`
+   - Sign in **as the recovery account** and Execute.
+   - The response has `"resourceName": "people/1234567890..."` → the number is the ID.
+3. Put it in `EmiLockerApp/app/src/main/java/com/scmemilocker/app/Config.kt`:
+   ```kotlin
+   val FRP_ACCOUNT_IDS: List<String> = listOf("1234567890...")
+   ```
+4. Rebuild and deploy with `./poc_build_deploy.sh`. Phones already provisioned pick it up on their next boot or app launch.
+
+### Test it (on a test phone only)
+Provision → reboot to recovery → wipe data → on setup, it should ask for a
+previously-synced Google account. Sign in with the recovery account to unlock.
+To re-lock that phone afterwards: factory reset from Settings and scan the QR again.
+
+### Limits
+- Needs Google Play services on the phone.
+- Doesn't stop someone flashing new firmware with a PC tool. Only Zero-touch,
+  Knox Guard, or Device Lock Controller survive that (production path).
