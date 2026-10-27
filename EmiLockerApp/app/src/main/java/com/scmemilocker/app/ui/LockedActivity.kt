@@ -81,12 +81,12 @@ class LockedActivity : AppCompatActivity() {
                 when {
                     response.isSuccessful -> {
                         val json = JSONObject(response.body?.string() ?: "{}")
-                        if (!json.optBoolean("isLocked", true)) dismiss(false)
+                        if (json.optBoolean("released", false)) dismiss(true)
+                        else if (!json.optBoolean("isLocked", true)) dismiss(false)
                         else if (interactive) runOnUiThread {
                             Toast.makeText(this@LockedActivity, "Still locked", Toast.LENGTH_SHORT).show()
                         }
                     }
-                    response.code == 404 -> dismiss(true) // deleted = released
                 }
             }
         })

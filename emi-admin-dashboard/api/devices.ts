@@ -1,20 +1,15 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { getDb } from './lib/mongodb.js';
+import { listDevices } from './lib/store.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
+  if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
   try {
-    const db = await getDb();
-    const collection = db.collection('devices');
-
-    const devices = await collection.find({}).sort({ registeredAt: -1 }).toArray();
-
+    const devices = (await listDevices())
+      .filter((d) => !d.released)
+      .sort((a, b) => (b.registeredAt || '').localeCompare(a.registeredAt || ''));
     return res.status(200).json({ devices });
-  } catch (error) {
-    console.error('Get devices error:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+  } catch (e: any) {
+    console.error('devices error', e);
+    return res.status(503).json({ error: String(e?.message || e), devices: [] });
   }
 }

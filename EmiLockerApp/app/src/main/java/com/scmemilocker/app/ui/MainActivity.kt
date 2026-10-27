@@ -48,8 +48,10 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        // We own the device: lock it down and register silently.
-        restrictions.applyPersistentRestrictions()
+        // We own the device: lock it down (only once setup is done) and register.
+        if (com.scmemilocker.app.workers.RegisterWorker.setupFinished(this)) {
+            restrictions.applyPersistentRestrictions()
+        }
         tvStatus.text = "Device secured and active."
 
         // Registration, polling and hiding the icon happen in RegisterWorker.

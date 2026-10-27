@@ -4,6 +4,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import android.provider.Settings
 import android.util.Log
 import androidx.work.*
 import com.google.android.gms.tasks.Tasks
@@ -32,7 +33,15 @@ class RegisterWorker(ctx: Context, params: WorkerParameters) : Worker(ctx, param
         val mgr = DeviceRestrictionManager(ctx)
         if (!mgr.isDeviceOwner()) return Result.success()
 
-        com.scmemilocker.app.ProvLog.send(ctx, "post_setup_worker", "deviceOwner=true")
+        // Never touch policies while Android's setup is still running: the setup
+        // wizard needs to change apps/settings after "Next", and our restrictions
+        // made it abort with "Something went wrong". Google's TestDPC also waits.
+        if (!setupFinished(ctx)) {
+            com.scmemilocker.app.ProvLog.send(ctx, "waiting_setup_complete", "attempt=$runAttemptCount")
+            return Result.retry()
+        }
+
+        com.scmemilocker.app.ProvLog.send(ctx, "post_setup_worker", "setupComplete=true")
         mgr.applyPersistentRestrictions()
 
         val prefs = ctx.getSharedPreferences("emi_prefs", Context.MODE_PRIVATE)
@@ -83,9 +92,18 @@ class RegisterWorker(ctx: Context, params: WorkerParameters) : Worker(ctx, param
     }
 
     companion object {
+        /** True once the device setup wizard has fully finished. */
+        fun setupFinished(ctx: Context): Boolean {
+            val cr = ctx.contentResolver
+            val userDone = try { Settings.Secure.getInt(cr, "user_setup_complete", 0) == 1 } catch (_: Exception) { true }
+            val deviceDone = try { Settings.Global.getInt(cr, Settings.Global.DEVICE_PROVISIONED, 0) == 1 } catch (_: Exception) { true }
+            return userDone && deviceDone
+        }
+
         fun enqueue(ctx: Context) {
             val req = OneTimeWorkRequestBuilder<RegisterWorker>()
                 .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
+                .setInitialDelay(20, TimeUnit.SECONDS)
                 .setBackoffCriteria(BackoffPolicy.LINEAR, 30, TimeUnit.SECONDS)
                 .build()
             WorkManager.getInstance(ctx).enqueueUniqueWork("RegisterWorker", ExistingWorkPolicy.KEEP, req)

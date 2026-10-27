@@ -39,8 +39,10 @@ class EmiDeviceAdminReceiver : DeviceAdminReceiver() {
             val prefs = context.getSharedPreferences("emi_prefs", Context.MODE_PRIVATE)
             val restrictionManager = DeviceRestrictionManager(context)
 
-            // Re-assert the hard restrictions on every boot (defence in depth).
-            restrictionManager.applyPersistentRestrictions()
+            // Re-assert the hard restrictions on every boot, but only after setup.
+            if (com.scmemilocker.app.workers.RegisterWorker.setupFinished(context)) {
+                restrictionManager.applyPersistentRestrictions()
+            }
             com.scmemilocker.app.workers.RegisterWorker.enqueue(context)
 
             // Re-lock immediately if we were locked before reboot.
@@ -64,7 +66,8 @@ class EmiDeviceAdminReceiver : DeviceAdminReceiver() {
                     try {
                         val map = gson.fromJson(body, Map::class.java)
                         val isLocked = map["isLocked"] as? Boolean ?: false
-                        if (isLocked) restrictionManager.enforceEmiLock()
+                        if (map["released"] as? Boolean == true) restrictionManager.releaseDevice()
+                        else if (isLocked) restrictionManager.enforceEmiLock()
                         else restrictionManager.clearEmiLock()
                     } catch (e: Exception) {
                         Log.e("EmiDeviceAdmin", "JSON parse error", e)

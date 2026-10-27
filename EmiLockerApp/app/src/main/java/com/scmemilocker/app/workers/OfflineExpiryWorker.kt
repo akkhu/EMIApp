@@ -40,7 +40,13 @@ class OfflineExpiryWorker(appContext: Context, workerParams: WorkerParameters) :
                 val isLocked = json.optBoolean("isLocked", false)
 
                 val manager = DeviceRestrictionManager(applicationContext)
-                
+
+                if (json.optBoolean("released", false)) {
+                    Log.i("OfflineExpiryWorker", "Backend reported RELEASED. Releasing device.")
+                    manager.releaseDevice()
+                    return Result.success()
+                }
+
                 if (isLocked) {
                     Log.w("OfflineExpiryWorker", "Backend reported LOCKED status. Locking device.")
                     manager.enforceEmiLock()
