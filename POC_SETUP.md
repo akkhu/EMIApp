@@ -1,0 +1,122 @@
+# EMI Locker — POC Setup & Provisioning Guide
+
+A device-financing (EMI) lock built on Android **Device Owner** (the official
+Android Enterprise / DevicePolicyManager framework — the same mechanism used by
+PayJoy, Samsung Knox Guard and Google's Device Lock Controller). It provisions
+via a QR code on a factory-reset phone, can be locked/unlocked remotely, blocks
+the common ways a lock could be bypassed, and can be fully released when the
+loan is paid. Works on **Android Go and standard Android** (Android 7 / API 24+).
+
+---
+
+## 1. Why provisioning was failing before (diagnosis)
+
+Everything in the QR math was correct — component name, package checksum (it
+matched the APK byte-for-byte), and the APK was properly V1+V2+V3 signed with
+your `release.keystore`. The real problems:
+
+1. **The APK was never committed to git**, so Vercel wasn't serving it. During
+   setup the phone fetched the download URL, got the dashboard's HTML (or a 404)
+   instead of a binary, and provisioning died right after the scan.
+2. The QR used **`PACKAGE_CHECKSUM`** (the APK's byte hash), which changes on
+   every rebuild — so any new build silently invalidated the QR.
+
+### What changed
+- QR now uses **`SIGNATURE_CHECKSUM`** (your signing-cert hash). It's constant
+  across rebuilds, so the QR is permanent.
+- APK is served at a **stable path**: `/emilocker.apk`, committed to the repo
+  and force-added by the deploy script, with correct `Content-Type` headers.
+- App stripped to a pure POC: **no login, no customer form**. It silently
+  self-registers (device id + FCM token) and hides its icon.
+- Added the hard restrictions you asked for (below), enforced from provisioning
+  until release.
+
+---
+
+## 2. What the device enforces
+
+Applied the moment the phone is provisioned, and kept until **Release**
+(so the lock cannot be broken even while the phone is currently "unlocked"):
+
+| Restriction | Effect |
+|---|---|
+| `DISALLOW_USB_FILE_TRANSFER` + USB data signaling off (API 31+) | No USB file transfer / data line |
+| `DISALLOW_SAFE_BOOT` | Cannot reboot into safe mode |
+| `DISALLOW_DEBUGGING_FEATURES` | No developer options / ADB |
+| `DISALLOW_FACTORY_RESET` | Cannot factory reset to escape |
+| `DISALLOW_APPS_CONTROL` | Cannot force-stop, clear data, or uninstall the app |
+| `DISALLOW_ADD_USER`, `DISALLOW_CONFIG_DATE_TIME`, `DISALLOW_MOUNT_PHYSICAL_MEDIA` | Close common bypass routes |
+
+- **Lock** = full-screen kiosk (lock-task pinned; Home/Back/Recents trapped).
+- **Unlock** = kiosk removed; hard restrictions stay (loan not finished).
+- **Release** = all restrictions cleared, Device Owner relinquished, app icon
+  restored, app settings opened so the customer can uninstall.
+
+---
+
+## 3. One-time setup
+
+1. **JDK 17** — needed by AGP 8.13. If you build from Android Studio's terminal
+   it's automatic; otherwise the deploy script auto-detects the Android Studio JDK.
+2. **(For instant lock) Firebase service account on Vercel** — set env var
+   `FIREBASE_SERVICE_ACCOUNT` to the JSON of your Firebase admin key
+   (Project Settings → Service accounts → Generate new private key), then redeploy.
+   Without it, lock/unlock still works via background polling (up to ~15 min).
+
+---
+
+## 4. Build & deploy (run on your Mac)
+
+```bash
+cd /Users/akhilesh/Documents/GitHub/EMIApp
+./poc_build_deploy.sh
+```
+
+This builds the signed APK, publishes it to `/emilocker.apk`, verifies the
+signature checksum matches the QR, commits, and pushes. Vercel auto-deploys in
+~1–2 min.
+
+**Verify the APK is actually live** (this must *download*, not show a web page):
+```
+https://emi-app-7pq1.vercel.app/emilocker.apk
+```
+
+---
+
+## 5. Generate the QR & provision a phone
+
+1. Open `https://emi-app-7pq1.vercel.app` → **Generate Onboarding QR**.
+2. On the target phone: **factory reset** it.
+3. On the first "Hi there / Welcome" setup screen, **tap the screen 6–7 times**
+   in the same spot → the QR scanner opens.
+4. Connect to **Wi-Fi** when asked.
+5. **Scan the QR.** The phone downloads the APK, installs it as Device Owner,
+   and finishes setup automatically. The app self-registers and disappears.
+
+---
+
+## 6. Test the flow
+
+On the dashboard, the device appears (shown by model). Then:
+- **Lock** (red) → phone shows the kiosk within seconds (instant with FCM, else
+  on next poll).
+- **Unlock** (green) → kiosk clears.
+- **Release** (trash) → removes the lock permanently and lets the customer
+  uninstall. *You cannot re-lock a released device without factory-resetting it.*
+
+> POC testing escape: on the lock screen, tap the title **10×** quickly to reveal
+> a maintenance "Release" button, so you never brick a test phone.
+
+---
+
+## 7. If provisioning still fails — checklist
+
+1. **APK URL** `…/emilocker.apk` downloads a file (not HTML/404). Most failures
+   are here — confirm the push deployed and Vercel has no deployment protection
+   (Project → Settings → Deployment Protection = off for the APK to be public).
+2. **Same domain**: open the dashboard on the exact domain the app calls
+   (`emi-app-7pq1.vercel.app`) so the QR's download URL and the app's API match.
+3. **Wi-Fi connected** before scanning.
+4. **Signature checksum** in `src/checksum.json` matches the keystore (the deploy
+   script checks and auto-corrects this).
+5. Re-generate the QR after deploy and scan the fresh one.

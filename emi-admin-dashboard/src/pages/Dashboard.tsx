@@ -70,11 +70,14 @@ export default function Dashboard() {
   };
 
   const getOnboardingUrl = () => {
-    // Android Device Owner Provisioning QR Code Payload
+    // Android Device Owner QR provisioning payload.
+    // Using SIGNATURE_CHECKSUM (the signing-cert hash) instead of PACKAGE_CHECKSUM
+    // so the QR stays valid across rebuilds. The APK is served at a STABLE path
+    // (/emilocker.apk) so this QR never needs regenerating.
     const payload = {
       "android.app.extra.PROVISIONING_DEVICE_ADMIN_COMPONENT_NAME": "com.scmemilocker.app/com.scmemilocker.app.receivers.EmiDeviceAdminReceiver",
-      "android.app.extra.PROVISIONING_DEVICE_ADMIN_PACKAGE_DOWNLOAD_LOCATION": `${window.location.origin}/${versionData.apkFileName}`,
-      "android.app.extra.PROVISIONING_DEVICE_ADMIN_PACKAGE_CHECKSUM": checksumData.packageChecksum,
+      "android.app.extra.PROVISIONING_DEVICE_ADMIN_PACKAGE_DOWNLOAD_LOCATION": `${window.location.origin}/emilocker.apk`,
+      "android.app.extra.PROVISIONING_DEVICE_ADMIN_SIGNATURE_CHECKSUM": checksumData.signatureChecksum,
       "android.app.extra.PROVISIONING_LEAVE_ALL_SYSTEM_APPS_ENABLED": true,
       "android.app.extra.PROVISIONING_SKIP_ENCRYPTION": true
     };
